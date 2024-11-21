@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Import PostgresSQL driver
 )
 
 type apiConfig struct {
@@ -32,11 +32,12 @@ func main() {
 		log.Fatal("DB_URL is not found in the enviroment")
 	}
 
-	// Connection to db
+	// Db connection using pq driver
 	conn, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatal("Database connection failed", err)
 	}
+	defer conn.Close()
 
 	queries := database.New(conn)
 
