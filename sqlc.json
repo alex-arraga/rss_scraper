@@ -2,7 +2,7 @@
   "version": "2",
   "sql": [
     {
-      "schema": "sql/schema/combined.sql",
+      "schema": "sql/combined_schema/combined.sql",
       "queries": "sql/queries",
       "engine": "postgresql",
       "gen": {
