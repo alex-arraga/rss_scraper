@@ -7,16 +7,15 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, created_at, update_at, name, api_key, lastname)
-VALUES ($1, $2, $3, $4, encode(sha256(random()::text::bytea), 'hex'), $5)
-RETURNING id, created_at, update_at, name, api_key, lastname
+INSERT INTO users (id, created_at, update_at, name, api_key)
+VALUES ($1, $2, $3, $4, encode(sha256(random()::text::bytea), 'hex'))
+RETURNING id, created_at, update_at, name, api_key
 `
 
 type CreateUserParams struct {
@@ -24,7 +23,6 @@ type CreateUserParams struct {
 	CreatedAt time.Time
 	UpdateAt  time.Time
 	Name      string
-	Lastname  sql.NullString
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -33,7 +31,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.CreatedAt,
 		arg.UpdateAt,
 		arg.Name,
-		arg.Lastname,
 	)
 	var i User
 	err := row.Scan(
@@ -42,13 +39,12 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UpdateAt,
 		&i.Name,
 		&i.ApiKey,
-		&i.Lastname,
 	)
 	return i, err
 }
 
 const getUserByAPIKey = `-- name: GetUserByAPIKey :one
-SELECT id, created_at, update_at, name, api_key, lastname FROM users WHERE api_key = $1
+SELECT id, created_at, update_at, name, api_key FROM users WHERE api_key = $1
 `
 
 func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey string) (User, error) {
@@ -60,7 +56,6 @@ func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey string) (User, err
 		&i.UpdateAt,
 		&i.Name,
 		&i.ApiKey,
-		&i.Lastname,
 	)
 	return i, err
 }
