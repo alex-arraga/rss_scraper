@@ -31,7 +31,7 @@ CREATE TABLE public.feeds (
     update_at timestamp without time zone NOT NULL,
     name text NOT NULL,
     url text NOT NULL,
-    user_id uuid
+    user_id uuid NOT NULL
 );
 
 

@@ -17,7 +17,7 @@ type Feed struct {
 	UpdateAt  time.Time
 	Name      string
 	Url       string
-	UserID    uuid.NullUUID
+	UserID    uuid.UUID
 }
 
 type GooseDbVersion struct {
