@@ -43,3 +43,11 @@ func resonseAPIFeed(dbFeed database.Feed) Feed {
 		User_ID:   dbFeed.UserID,
 	}
 }
+
+func resonseAPIFeeds(dbFeeds []database.Feed) []Feed {
+	feeds := []Feed{}
+	for _, dbFeed := range dbFeeds {
+		feeds = append(feeds, resonseAPIFeed(dbFeed))
+	}
+	return feeds
+}
