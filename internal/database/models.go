@@ -5,10 +5,27 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+type Feed struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdateAt  time.Time
+	Name      string
+	Url       string
+	UserID    uuid.NullUUID
+}
+
+type GooseDbVersion struct {
+	ID        int32
+	VersionID int64
+	IsApplied bool
+	Tstamp    time.Time
+}
 
 type User struct {
 	ID        uuid.UUID
@@ -16,4 +33,5 @@ type User struct {
 	UpdateAt  time.Time
 	Name      string
 	ApiKey    string
+	Lastname  sql.NullString
 }
