@@ -22,6 +22,13 @@ type Feed struct {
 	URL       string    `json:"url"`
 	User_ID   uuid.UUID `json:"user_id"`
 }
+type FeedFollows struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdateAt  time.Time `json:"updated_at"`
+	Feed_ID   uuid.UUID `json:"feed_id"`
+	User_ID   uuid.UUID `json:"user_id"`
+}
 
 func responseAPIUser(dbUser database.User) User {
 	return User{
@@ -50,4 +57,14 @@ func resonseAPIFeeds(dbFeeds []database.Feed) []Feed {
 		feeds = append(feeds, resonseAPIFeed(dbFeed))
 	}
 	return feeds
+}
+
+func resonseAPIFeedFollows(dbFeedFollows database.FeedFollow) FeedFollows {
+	return FeedFollows{
+		ID:        dbFeedFollows.ID,
+		CreatedAt: dbFeedFollows.CreatedAt,
+		UpdateAt:  dbFeedFollows.UpdateAt,
+		Feed_ID:   dbFeedFollows.FeedID,
+		User_ID:   dbFeedFollows.UserID,
+	}
 }

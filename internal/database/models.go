@@ -20,6 +20,14 @@ type Feed struct {
 	UserID    uuid.UUID
 }
 
+type FeedFollow struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdateAt  time.Time
+	FeedID    uuid.UUID
+	UserID    uuid.UUID
+}
+
 type GooseDbVersion struct {
 	ID        int32
 	VersionID int64

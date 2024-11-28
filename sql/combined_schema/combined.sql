@@ -22,6 +22,19 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: feed_follows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.feed_follows (
+    id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    update_at timestamp without time zone NOT NULL,
+    feed_id uuid NOT NULL,
+    user_id uuid NOT NULL
+);
+
+
+--
 -- Name: feeds; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -76,6 +89,22 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: feed_follows feed_follows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feed_follows
+    ADD CONSTRAINT feed_follows_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: feed_follows feed_follows_user_id_feed_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feed_follows
+    ADD CONSTRAINT feed_follows_user_id_feed_id_key UNIQUE (user_id, feed_id);
+
+
+--
 -- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -113,6 +142,22 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: feed_follows feed_follows_feed_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feed_follows
+    ADD CONSTRAINT feed_follows_feed_id_fkey FOREIGN KEY (feed_id) REFERENCES public.feeds(id) ON DELETE CASCADE;
+
+
+--
+-- Name: feed_follows feed_follows_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feed_follows
+    ADD CONSTRAINT feed_follows_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
