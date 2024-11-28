@@ -68,3 +68,12 @@ func resonseAPIFeedFollows(dbFeedFollows database.FeedFollow) FeedFollows {
 		User_ID:   dbFeedFollows.UserID,
 	}
 }
+
+func resonseAPIFeedsFollows(dbFeedsFollows []database.FeedFollow) []FeedFollows {
+	feedFollows := []FeedFollows{}
+	for _, dbFeedFollow := range dbFeedsFollows {
+		feedFollows = append(feedFollows, resonseAPIFeedFollows(dbFeedFollow))
+	}
+
+	return feedFollows
+}
