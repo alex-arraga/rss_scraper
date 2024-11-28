@@ -1,3 +1,6 @@
+## Build and run
+Open a powershell console and execute ```go build && ./rss_project```
+
 ### Steps to update db
 
 1. Create or changes migrations files in ```sql/schemas```, using goose.
