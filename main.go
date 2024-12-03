@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/alex-arraga/rss_project/internal/database"
 	"github.com/go-chi/chi"
@@ -19,12 +19,6 @@ type apiConfig struct {
 }
 
 func main() {
-	feed, err := urlToFeed("https://wagslane.dev/index.xml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(feed)
-
 	// Export the variables of .env in the project
 	godotenv.Load(".env")
 
@@ -46,11 +40,12 @@ func main() {
 	}
 	defer conn.Close()
 
-	queries := database.New(conn)
-
+	db := database.New(conn)
 	apiCfg := apiConfig{
-		DB: queries,
+		DB: db,
 	}
+
+	go startScrapping(db, 10, time.Minute)
 
 	// Create router and server
 	router := chi.NewRouter()
