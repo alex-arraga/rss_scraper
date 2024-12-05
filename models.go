@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Types
 type User struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
@@ -62,6 +63,7 @@ func resonseAPIFeed(dbFeed database.Feed) Feed {
 	}
 }
 
+// Responses
 func resonseAPIFeeds(dbFeeds []database.Feed) []Feed {
 	feeds := []Feed{}
 	for _, dbFeed := range dbFeeds {
