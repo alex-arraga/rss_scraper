@@ -30,6 +30,17 @@ type FeedFollows struct {
 	User_ID   uuid.UUID `json:"user_id"`
 }
 
+type Post struct {
+	ID          uuid.UUID `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Title       string    `json:"title"`
+	Description *string   `json:"description"`
+	PublishedAt time.Time `json:"published_at"`
+	URL         string    `json:"url"`
+	FeedID      uuid.UUID `json:"feed_id"`
+}
+
 func responseAPIUser(dbUser database.User) User {
 	return User{
 		ID:        dbUser.ID,
@@ -76,4 +87,31 @@ func resonseAPIFeedsFollows(dbFeedsFollows []database.FeedFollow) []FeedFollows 
 	}
 
 	return feedFollows
+}
+
+func resonseAPIPostForUser(dbPosts database.Post) Post {
+	var description *string
+	if dbPosts.Description.Valid {
+		description = &dbPosts.Description.String
+	}
+
+	return Post{
+		ID:          dbPosts.ID,
+		CreatedAt:   dbPosts.CreatedAt,
+		UpdatedAt:   dbPosts.UpdatedAt,
+		Title:       dbPosts.Title,
+		Description: description,
+		PublishedAt: dbPosts.PublishedAt,
+		URL:         dbPosts.Url,
+		FeedID:      dbPosts.FeedID,
+	}
+}
+
+func resonseAPIPostsForUser(dbPosts []database.Post) []Post {
+	posts := []Post{}
+	for _, dbPost := range dbPosts {
+		posts = append(posts, resonseAPIPostForUser(dbPost))
+	}
+
+	return posts
 }
