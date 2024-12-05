@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/alex-arraga/rss_project/internal/database"
-	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )
 
@@ -100,10 +99,9 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 
 // DELETE - one
 func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedIDStr := chi.URLParam(r, "feedID")
-	feedID, err := uuid.Parse(feedIDStr)
+	feedID, err := parseURLParamToUUID(r, "feedID")
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid feed ID ")
+		respondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
 	err = apiCfg.DB.DeleteFeed(r.Context(), feedID)

@@ -51,7 +51,7 @@ func parseURLParamToUUID(r *http.Request, urlParam string) (uuid.UUID, error) {
 	reqID := chi.URLParam(r, urlParam)
 	parsedID, err := uuid.Parse(reqID)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("Invalid UUID: %v", err)
+		return uuid.Nil, fmt.Errorf("invalid UUID: %v", err)
 	}
 
 	return parsedID, nil
