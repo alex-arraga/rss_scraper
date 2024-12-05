@@ -63,34 +63,47 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 	}
 	params := parameter{}
 
+	// Get and validate feed id
 	feedIDStr := chi.URLParam(r, "feedID")
 	feedID, err := uuid.Parse(feedIDStr)
 	if err != nil {
-		log.Printf("Error parsing uuid: %v", err)
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid feed ID - %v", err))
+		return
 	}
 
+	// Read body
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("Couldn't read body: %v", err)
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to read request body - %v", err))
+		return
 	}
 	defer r.Body.Close()
 
+	// Parse to JSON
 	err = json.Unmarshal(body, &params)
 	if err != nil {
-		log.Printf("Couldn't parse body: %v", err)
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Invalid request body - %v", err))
+		return
 	}
 
+	// Validate params
+	if params.Name == "" || params.URL == "" {
+		respondWithError(w, http.StatusBadRequest, "Name and URL are required")
+		return
+	}
+
+	// Update feed in db
 	feedUpdated, err := apiCfg.DB.UpdateFeed(r.Context(), database.UpdateFeedParams{
 		ID:   feedID,
 		Name: params.Name,
 		Url:  params.URL,
 	})
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't update feed: %v", err))
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't update feed: %v", err))
 		return
 	}
 
-	respondWithJSON(w, 200, resonseAPIFeed(feedUpdated))
+	respondWithJSON(w, http.StatusOK, resonseAPIFeed(feedUpdated))
 }
 
 // DELETE - one
