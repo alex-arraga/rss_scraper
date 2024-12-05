@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/alex-arraga/rss_project/internal/database"
+	"github.com/google/uuid"
 )
 
 func startScrapping(
@@ -52,7 +55,51 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 	}
 
 	for _, item := range rssFeed.Channel.Item {
-		log.Println("Found post:", item.Title, ". On feed", feed.Name)
+		description := sql.NullString{}
+		if item.Description != "" {
+			description.String = item.Description
+			description.Valid = true
+		}
+
+		var pubAt time.Time
+		if item.PubDate == "" {
+			pubAt = time.Now().UTC()
+		} else {
+			pubAt, err = time.Parse(time.RFC1123Z, item.PubDate)
+			if err != nil {
+				log.Printf("couldn't parse date: %v - err: %v", item.PubDate, err)
+				continue
+			}
+		}
+
+		_, err = db.CreatePost(context.Background(),
+			database.CreatePostParams{
+				ID:          uuid.New(),
+				CreatedAt:   time.Now().UTC(),
+				UpdatedAt:   time.Now().UTC(),
+				Title:       item.Title,
+				Description: description,
+				Url:         item.Link,
+				FeedID:      feed.ID,
+				PublishedAt: pubAt,
+			})
+		if err != nil {
+			possibleErrs := []string{"duplicate key", "llave duplicada"}
+			skipError := false
+
+			for _, possibleErr := range possibleErrs {
+				if strings.Contains(err.Error(), possibleErr) {
+					skipError = true
+					break
+				}
+			}
+
+			if skipError {
+				continue
+			}
+
+			log.Printf("failed creating new post: %v", err)
+		}
 	}
 
 	log.Printf("Feed %s collected, %v post found", feed.Name, len(rssFeed.Channel.Item))
