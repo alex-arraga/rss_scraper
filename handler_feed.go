@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/alex-arraga/rss_project/internal/database"
+	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )
 
@@ -47,5 +49,21 @@ func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	respondWithJSON(w, 201, resonseAPIFeeds(feeds))
+	respondWithJSON(w, 200, resonseAPIFeeds(feeds))
+}
+
+func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+	feedIDStr := chi.URLParam(r, "feedID")
+	feedID, err := uuid.Parse(feedIDStr)
+	if err != nil {
+		log.Printf("Error parsing uuid: %v", err)
+	}
+
+	err = apiCfg.DB.DeleteFeed(r.Context(), feedID)
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprintf("Couldn't get feeds: %v", err))
+		return
+	}
+
+	respondWithJSON(w, 200, struct{}{})
 }
