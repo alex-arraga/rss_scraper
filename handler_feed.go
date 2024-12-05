@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -18,15 +16,20 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		Name string `json:"name"`
 		URL  string `json:"url"`
 	}
-	params := parameters{}
 
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&params)
+	params, err := parseRequestBody[parameters](r)
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
 		return
 	}
 
+	// Validate params
+	if params.Name == "" || params.URL == "" {
+		respondWithError(w, http.StatusBadRequest, "Name and URL are required")
+		return
+	}
+
+	// Create feed in db
 	feed, err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
@@ -36,31 +39,30 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		UserID:    user.ID,
 	})
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't create feed: %v", err))
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
 		return
 	}
 
-	respondWithJSON(w, 201, resonseAPIFeed(feed))
+	respondWithJSON(w, http.StatusOK, resonseAPIFeed(feed))
 }
 
 // GET - many
 func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
 	feeds, err := apiCfg.DB.GetFeeds(r.Context())
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't get feeds: %v", err))
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
 		return
 	}
 
-	respondWithJSON(w, 200, resonseAPIFeeds(feeds))
+	respondWithJSON(w, http.StatusOK, resonseAPIFeeds(feeds))
 }
 
 // PUT
 func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
-	type parameter struct {
+	type parameters struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
 	}
-	params := parameter{}
 
 	// Get and validate feed id
 	feedIDStr := chi.URLParam(r, "feedID")
@@ -70,16 +72,8 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Read body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to read request body - %v", err))
-		return
-	}
-	defer r.Body.Close()
-
 	// Parse to JSON
-	err = json.Unmarshal(body, &params)
+	params, err := parseRequestBody[parameters](r)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Invalid request body - %v", err))
 		return
