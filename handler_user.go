@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -15,12 +14,15 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		Name   string `json:"name"`
 		ApiKey string `json:"api_key"`
 	}
-	params := parameters{}
 
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&params)
+	params, err := parseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
+		return
+	}
+
+	if params.Name == "" {
+		respondWithError(w, http.StatusBadRequest, "Name is required")
 		return
 	}
 
@@ -31,15 +33,15 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		Name:      params.Name,
 	})
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't create user: %v", err))
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create user: %v", err))
 		return
 	}
 
-	respondWithJSON(w, 201, responseAPIUser(user))
+	respondWithJSON(w, http.StatusOK, responseAPIUser(user))
 }
 
 func (apiCfg *apiConfig) handlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	respondWithJSON(w, 200, responseAPIUser(user))
+	respondWithJSON(w, http.StatusOK, responseAPIUser(user))
 }
 
 func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -48,9 +50,9 @@ func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.R
 		Limit:  10,
 	})
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't get the posts %v ", err))
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the posts %v ", err))
 		return
 	}
 
-	respondWithJSON(w, 200, resonseAPIPostsForUser(posts))
+	respondWithJSON(w, http.StatusOK, resonseAPIPostsForUser(posts))
 }

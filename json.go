@@ -47,6 +47,7 @@ func parseRequestBody[T any](r *http.Request) (T, error) {
 	return params, nil
 }
 
+// Convert string URL param to UUID
 func parseURLParamToUUID(r *http.Request, urlParam string) (uuid.UUID, error) {
 	reqID := chi.URLParam(r, urlParam)
 	parsedID, err := uuid.Parse(reqID)

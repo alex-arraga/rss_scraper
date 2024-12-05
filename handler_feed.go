@@ -18,7 +18,7 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 
 	params, err := parseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error parsing JSON: %v", err))
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
 		return
 	}
 
@@ -73,7 +73,7 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 	// Parse to JSON
 	params, err := parseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Invalid request body - %v", err))
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
 		return
 	}
 
