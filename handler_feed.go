@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -67,7 +66,7 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 	feedIDStr := chi.URLParam(r, "feedID")
 	feedID, err := uuid.Parse(feedIDStr)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid feed ID - %v", err))
+		respondWithError(w, http.StatusBadRequest, "Invalid feed ID")
 		return
 	}
 
@@ -111,14 +110,14 @@ func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Reques
 	feedIDStr := chi.URLParam(r, "feedID")
 	feedID, err := uuid.Parse(feedIDStr)
 	if err != nil {
-		log.Printf("Error parsing uuid: %v", err)
+		respondWithError(w, http.StatusBadRequest, "Invalid feed ID ")
 	}
 
 	err = apiCfg.DB.DeleteFeed(r.Context(), feedID)
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't get feeds: %v", err))
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't delete feed: %v", err))
 		return
 	}
 
-	respondWithJSON(w, 200, struct{}{})
+	respondWithJSON(w, http.StatusOK, struct{}{})
 }
