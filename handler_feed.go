@@ -19,7 +19,7 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 
 	params, err := parseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
+		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error parsing JSON: %v", err))
 		return
 	}
 
@@ -65,10 +65,9 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Get and validate feed id
-	feedIDStr := chi.URLParam(r, "feedID")
-	feedID, err := uuid.Parse(feedIDStr)
+	feedID, err := parseURLParamToUUID(r, "feedID")
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid feed ID")
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 

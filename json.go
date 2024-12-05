@@ -2,8 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/google/uuid"
 )
 
 func respondWithError(w http.ResponseWriter, code int, msg string) {
@@ -41,4 +45,14 @@ func parseRequestBody[T any](r *http.Request) (T, error) {
 		return params, err
 	}
 	return params, nil
+}
+
+func parseURLParamToUUID(r *http.Request, urlParam string) (uuid.UUID, error) {
+	reqID := chi.URLParam(r, urlParam)
+	parsedID, err := uuid.Parse(reqID)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("Invalid UUID: %v", err)
+	}
+
+	return parsedID, nil
 }
