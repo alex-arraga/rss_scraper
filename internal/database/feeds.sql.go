@@ -152,3 +152,31 @@ func (q *Queries) MarkFeedAsFetched(ctx context.Context, id uuid.UUID) (Feed, er
 	)
 	return i, err
 }
+
+const updateFeed = `-- name: UpdateFeed :one
+UPDATE feeds 
+SET name = $1, url = $2
+WHERE id = $3
+RETURNING id, created_at, update_at, name, url, user_id, last_fetched_at
+`
+
+type UpdateFeedParams struct {
+	Name string
+	Url  string
+	ID   uuid.UUID
+}
+
+func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, updateFeed, arg.Name, arg.Url, arg.ID)
+	var i Feed
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdateAt,
+		&i.Name,
+		&i.Url,
+		&i.UserID,
+		&i.LastFetchedAt,
+	)
+	return i, err
+}

@@ -20,3 +20,9 @@ RETURNING *;
 
 -- name: DeleteFeed :exec
 DELETE FROM feeds WHERE id = $1;
+
+-- name: UpdateFeed :one
+UPDATE feeds 
+SET name = $1, url = $2
+WHERE id = $3
+RETURNING *;
