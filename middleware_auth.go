@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/alex-arraga/rss_project/internal/auth"
-	"github.com/alex-arraga/rss_project/internal/database"
+	"github.com/alex-arraga/rss_project/internal/database/sqlc"
 )
 
 type authedHandler func(http.ResponseWriter, *http.Request, database.User)

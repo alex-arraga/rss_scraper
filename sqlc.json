@@ -7,7 +7,7 @@
       "engine": "postgresql",
       "gen": {
         "go": {
-          "out": "internal/database",
+          "out": "internal/database/sqlc",
           "package": "database"
         }
       }

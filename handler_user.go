@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alex-arraga/rss_project/internal/database"
+	"github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/google/uuid"
 )
 

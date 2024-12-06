@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/alex-arraga/rss_project/internal/database"
+	"github.com/alex-arraga/rss_project/internal/config"
+
+	"github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // Import PostgresSQL driver
 )
 
@@ -19,19 +19,7 @@ type apiConfig struct {
 }
 
 func main() {
-	// Export the variables of .env in the project
-	godotenv.Load(".env")
-
-	// Read env
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("PORT is not found in the enviroment")
-	}
-
-	dbURL := os.Getenv("DB_URL")
-	if dbURL == "" {
-		log.Fatal("DB_URL is not found in the enviroment")
-	}
+	port, dbURL := config.LoadConfig()
 
 	// Db connection using pq driver
 	conn, err := sql.Open("postgres", dbURL)
