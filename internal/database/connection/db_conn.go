@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func connectDB(dbURL string) *sql.DB {
+func ConnectDB(dbURL string) *sql.DB {
 	// Db connection using pq driver
 	conn, err := sql.Open("postgres", dbURL)
 	if err != nil {

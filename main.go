@@ -1,13 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/alex-arraga/rss_project/internal/config"
 
+	"github.com/alex-arraga/rss_project/internal/database/connection"
 	"github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -22,11 +22,7 @@ func main() {
 	port, dbURL := config.LoadConfig()
 
 	// Db connection using pq driver
-	conn, err := sql.Open("postgres", dbURL)
-	if err != nil {
-		log.Fatal("Database connection failed", err)
-	}
-	defer conn.Close()
+	conn := connection.ConnectDB(dbURL)
 
 	db := database.New(conn)
 	apiCfg := apiConfig{
@@ -72,7 +68,7 @@ func main() {
 	}
 
 	log.Printf("Server starting on port: %s", port)
-	err = srv.ListenAndServe()
+	err := srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
