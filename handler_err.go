@@ -1,7 +1,11 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/alex-arraga/rss_project/internal/utils"
+)
 
 func handlerErr(w http.ResponseWriter, r *http.Request) {
-	respondWithError(w, http.StatusBadRequest, "Something went wrong")
+	utils.RespondWithError(w, http.StatusBadRequest, "Something went wrong")
 }

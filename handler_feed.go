@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alex-arraga/rss_project/internal/database/sqlc"
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -16,15 +17,15 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		URL  string `json:"url"`
 	}
 
-	params, err := parseRequestBody[parameters](r)
+	params, err := utils.ParseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
 		return
 	}
 
 	// Validate params
 	if params.Name == "" || params.URL == "" {
-		respondWithError(w, http.StatusBadRequest, "Name and URL are required")
+		utils.RespondWithError(w, http.StatusBadRequest, "Name and URL are required")
 		return
 	}
 
@@ -38,22 +39,22 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		UserID:    user.ID,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, resonseAPIFeed(feed))
+	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeed(feed))
 }
 
 // GET - many
 func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
 	feeds, err := apiCfg.DB.GetFeeds(r.Context())
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, resonseAPIFeeds(feeds))
+	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeeds(feeds))
 }
 
 // PUT
@@ -64,22 +65,22 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Get and validate feed id
-	feedID, err := parseURLParamToUUID(r, "feedID")
+	feedID, err := utils.ParseURLParamToUUID(r, "feedID")
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// Parse to JSON
-	params, err := parseRequestBody[parameters](r)
+	params, err := utils.ParseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
 		return
 	}
 
 	// Validate params
 	if params.Name == "" || params.URL == "" {
-		respondWithError(w, http.StatusBadRequest, "Name and URL are required")
+		utils.RespondWithError(w, http.StatusBadRequest, "Name and URL are required")
 		return
 	}
 
@@ -90,25 +91,25 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 		Url:  params.URL,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't update feed: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't update feed: %v", err))
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, resonseAPIFeed(feedUpdated))
+	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeed(feedUpdated))
 }
 
 // DELETE - one
 func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedID, err := parseURLParamToUUID(r, "feedID")
+	feedID, err := utils.ParseURLParamToUUID(r, "feedID")
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
 	err = apiCfg.DB.DeleteFeed(r.Context(), feedID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't delete feed: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't delete feed: %v", err))
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, struct{}{})
+	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
 }

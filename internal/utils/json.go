@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func respondWithError(w http.ResponseWriter, code int, msg string) {
+func RespondWithError(w http.ResponseWriter, code int, msg string) {
 	if code > 499 {
 		log.Println("Responding with 5XX error: ", msg)
 	}
@@ -19,12 +19,12 @@ func respondWithError(w http.ResponseWriter, code int, msg string) {
 		Error string `json:"error"`
 	}
 
-	respondWithJSON(w, code, errResponse{
+	RespondWithJSON(w, code, errResponse{
 		Error: msg,
 	})
 }
 
-func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Printf("Failed to marshal JSON response: %v", payload)
@@ -36,7 +36,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(data)
 }
 
-func parseRequestBody[T any](r *http.Request) (T, error) {
+func ParseRequestBody[T any](r *http.Request) (T, error) {
 	var params T
 
 	decoder := json.NewDecoder(r.Body)
@@ -48,7 +48,7 @@ func parseRequestBody[T any](r *http.Request) (T, error) {
 }
 
 // Convert string URL param to UUID
-func parseURLParamToUUID(r *http.Request, urlParam string) (uuid.UUID, error) {
+func ParseURLParamToUUID(r *http.Request, urlParam string) (uuid.UUID, error) {
 	reqID := chi.URLParam(r, urlParam)
 	parsedID, err := uuid.Parse(reqID)
 	if err != nil {

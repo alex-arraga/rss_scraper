@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alex-arraga/rss_project/internal/database/sqlc"
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -15,14 +16,14 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		ApiKey string `json:"api_key"`
 	}
 
-	params, err := parseRequestBody[parameters](r)
+	params, err := utils.ParseRequestBody[parameters](r)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
 		return
 	}
 
 	if params.Name == "" {
-		respondWithError(w, http.StatusBadRequest, "Name is required")
+		utils.RespondWithError(w, http.StatusBadRequest, "Name is required")
 		return
 	}
 
@@ -33,15 +34,15 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		Name:      params.Name,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create user: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create user: %v", err))
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, responseAPIUser(user))
+	utils.RespondWithJSON(w, http.StatusOK, responseAPIUser(user))
 }
 
 func (apiCfg *apiConfig) handlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	respondWithJSON(w, http.StatusOK, responseAPIUser(user))
+	utils.RespondWithJSON(w, http.StatusOK, responseAPIUser(user))
 }
 
 func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -50,9 +51,9 @@ func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.R
 		Limit:  10,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the posts %v ", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the posts %v ", err))
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, resonseAPIPostsForUser(posts))
+	utils.RespondWithJSON(w, http.StatusOK, resonseAPIPostsForUser(posts))
 }
