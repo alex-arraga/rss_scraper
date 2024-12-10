@@ -6,6 +6,7 @@ import (
 	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
@@ -38,11 +39,11 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, responseAPIUser(user))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
 func (apiCfg *apiConfig) handlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	utils.RespondWithJSON(w, http.StatusOK, responseAPIUser(user))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
 func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -55,5 +56,5 @@ func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, resonseAPIPostsForUser(posts))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIPostsForUser(posts))
 }

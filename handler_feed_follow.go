@@ -6,6 +6,7 @@ import (
 	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
@@ -32,7 +33,7 @@ func (apiCfg *apiConfig) handlerCreateFeedFollow(w http.ResponseWriter, r *http.
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusCreated, resonseAPIFeedFollows(feedFollows))
+	utils.RespondWithJSON(w, http.StatusCreated, models.ResonseAPIFeedFollows(feedFollows))
 }
 
 func (apiCfg *apiConfig) handlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -42,7 +43,7 @@ func (apiCfg *apiConfig) handlerGetFeedsFollows(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeedsFollows(feedsFollows))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeedsFollows(feedsFollows))
 }
 
 func (apiCfg *apiConfig) handlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {

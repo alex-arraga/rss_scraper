@@ -6,6 +6,7 @@ import (
 	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
@@ -43,7 +44,7 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeed(feed))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeed(feed))
 }
 
 // GET - many
@@ -54,7 +55,7 @@ func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeeds(feeds))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeeds(feeds))
 }
 
 // PUT
@@ -95,7 +96,7 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, resonseAPIFeed(feedUpdated))
+	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeed(feedUpdated))
 }
 
 // DELETE - one
