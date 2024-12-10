@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	outputFile := "./sql/combined_schema/combined.sql"
+	outputFile := "./internal/database/sql/combined_schemas/combined.sql"
 
 	godotenv.Load(".env")
 	dbURL := os.Getenv("DB_URL")

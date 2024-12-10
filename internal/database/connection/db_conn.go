@@ -11,7 +11,7 @@ func ConnectDB(dbURL string) *sql.DB {
 	if err != nil {
 		log.Fatal("Database connection failed", err)
 	}
-	defer conn.Close()
+	// defer conn.Close()
 
 	return conn
 }
