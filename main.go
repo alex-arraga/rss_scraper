@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/alex-arraga/rss_project/internal/config"
-
 	"github.com/alex-arraga/rss_project/internal/database/connection"
-	"github.com/alex-arraga/rss_project/internal/database/sqlc"
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/scrapper"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	_ "github.com/lib/pq" // Import PostgresSQL driver
@@ -29,7 +29,7 @@ func main() {
 		DB: db,
 	}
 
-	go startScrapping(db, 10, time.Minute)
+	go scrapper.StartScrapping(db, 10, time.Minute)
 
 	// Create router and server
 	router := chi.NewRouter()

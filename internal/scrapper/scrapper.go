@@ -1,4 +1,4 @@
-package main
+package scrapper
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alex-arraga/rss_project/internal/database/sqlc"
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/google/uuid"
 )
 
-func startScrapping(
+func StartScrapping(
 	db *database.Queries,
 	concurrency int,
 	timeBetweenRequest time.Duration,
