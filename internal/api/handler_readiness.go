@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"net/http"
@@ -6,6 +6,6 @@ import (
 	"github.com/alex-arraga/rss_project/internal/utils"
 )
 
-func handlerReadiness(w http.ResponseWriter, r *http.Request) {
+func (*APIConfig) HandlerReadiness(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
 }

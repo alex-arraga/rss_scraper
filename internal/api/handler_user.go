@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *APIConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Name   string `json:"name"`
 		ApiKey string `json:"api_key"`
@@ -42,11 +42,11 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
-func (apiCfg *apiConfig) handlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
-func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	posts, err := apiCfg.DB.GetPostsForUser(r.Context(), database.GetPostsForUserParams{
 		UserID: user.ID,
 		Limit:  10,

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 // POST
-func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
@@ -48,7 +48,7 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 }
 
 // GET - many
-func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *APIConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
 	feeds, err := apiCfg.DB.GetFeeds(r.Context())
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
@@ -59,7 +59,7 @@ func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request)
 }
 
 // PUT
-func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerUpdateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
@@ -100,7 +100,7 @@ func (apiCfg *apiConfig) handlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 }
 
 // DELETE - one
-func (apiCfg *apiConfig) handlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedID, err := utils.ParseURLParamToUUID(r, "feedID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error())

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (apiCfg *apiConfig) handlerCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		FeedID uuid.UUID `json:"feed_id"`
 	}
@@ -36,7 +36,7 @@ func (apiCfg *apiConfig) handlerCreateFeedFollow(w http.ResponseWriter, r *http.
 	utils.RespondWithJSON(w, http.StatusCreated, models.ResonseAPIFeedFollows(feedFollows))
 }
 
-func (apiCfg *apiConfig) handlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedsFollows, err := apiCfg.DB.GetFeedsFollows(r.Context(), user.ID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get feeds: %v", err))
@@ -46,7 +46,7 @@ func (apiCfg *apiConfig) handlerGetFeedsFollows(w http.ResponseWriter, r *http.R
 	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeedsFollows(feedsFollows))
 }
 
-func (apiCfg *apiConfig) handlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *APIConfig) HandlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedFollowId, err := utils.ParseURLParamToUUID(r, "feedFollowID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
