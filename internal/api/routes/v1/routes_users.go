@@ -8,7 +8,7 @@ import (
 
 func UsersRoutes(r chi.Router, userService *services.ServicesConfig) {
 	handlerConfig := handlers.HandlerConfig{
-		UserService: userService,
+		Services: userService,
 	}
 
 	r.Post("/users", handlerConfig.HandlerCreateUser)

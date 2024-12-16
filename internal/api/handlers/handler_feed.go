@@ -1,18 +1,16 @@
-package api
+package handlers
 
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
-	"github.com/google/uuid"
 )
 
 // POST
-func (apiCfg *APIConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (h *HandlerConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
@@ -31,20 +29,13 @@ func (apiCfg *APIConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Create feed in db
-	feed, err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdateAt:  time.Now().UTC(),
-		Name:      params.Name,
-		Url:       params.URL,
-		UserID:    user.ID,
-	})
+	feed, err := h.Services.CreateFeed(r.Context(), user.ID, params.Name, params.URL)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeed(feed))
+	utils.RespondWithJSON(w, http.StatusOK, feed)
 }
 
 // GET - many

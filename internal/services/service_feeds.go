@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -12,39 +13,21 @@ import (
 )
 
 // POST
-func (apiCfg *ServicesConfig) CreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
-	type parameters struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	}
-
-	params, err := utils.ParseRequestBody[parameters](r)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
-		return
-	}
-
-	// Validate params
-	if params.Name == "" || params.URL == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, "Name and URL are required")
-		return
-	}
-
+func (apiCfg *ServicesConfig) CreateFeed(ctx context.Context, userID uuid.UUID, name string, url string) (models.Feed, error) {
 	// Create feed in db
-	feed, err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
+	feed, err := apiCfg.DB.CreateFeed(ctx, database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
-		Name:      params.Name,
-		Url:       params.URL,
-		UserID:    user.ID,
+		Name:      name,
+		Url:       url,
+		UserID:    userID,
 	})
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
-		return
+		return models.Feed{}, fmt.Errorf("Couldn't create feed: %v", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeed(feed))
+	return models.ResonseAPIFeed(feed), nil
 }
 
 // GET - many
