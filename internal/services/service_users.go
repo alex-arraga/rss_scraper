@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,50 +12,36 @@ import (
 	"github.com/google/uuid"
 )
 
-func (userSrv *ServicesConfig) CreateUser(w http.ResponseWriter, r *http.Request) {
-	type parameters struct {
-		Name   string `json:"name"`
-		ApiKey string `json:"api_key"`
+func (srv *ServicesConfig) CreateUser(ctx context.Context, name string) (models.User, error) {
+	if name == "" {
+		return models.User{}, fmt.Errorf("name is required")
 	}
 
-	params, err := utils.ParseRequestBody[parameters](r)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
-		return
-	}
-
-	if params.Name == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, "Name is required")
-		return
-	}
-
-	user, err := userSrv.DB.CreateUser(r.Context(), database.CreateUserParams{
+	user, err := srv.DB.CreateUser(ctx, database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
-		Name:      params.Name,
+		Name:      name,
 	})
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create user: %v", err))
-		return
+		return models.User{}, fmt.Errorf("failed to create user: %w", err)
 	}
 
+	return models.ResponseAPIUser(user), nil
+}
+
+func (srv *ServicesConfig) GetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
-func (userSrv *ServicesConfig) GetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
-}
-
-func (userSrv *ServicesConfig) GetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
-	posts, err := userSrv.DB.GetPostsForUser(r.Context(), database.GetPostsForUserParams{
-		UserID: user.ID,
-		Limit:  10,
+func (srv *ServicesConfig) GetPostsForUser(ctx context.Context, userID uuid.UUID, limit int32) ([]models.Post, error) {
+	posts, err := srv.DB.GetPostsForUser(ctx, database.GetPostsForUserParams{
+		UserID: userID,
+		Limit:  limit,
 	})
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the posts %v ", err))
-		return
+		return []models.Post{}, fmt.Errorf("couldn't get the posts %v ", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIPostsForUser(posts))
+	return models.ResonseAPIPostsForUser(posts), nil
 }

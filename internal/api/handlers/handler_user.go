@@ -1,17 +1,20 @@
-package api
+package handlers
 
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/models"
+	"github.com/alex-arraga/rss_project/internal/services"
 	"github.com/alex-arraga/rss_project/internal/utils"
-	"github.com/google/uuid"
 )
 
-func (apiCfg *APIConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
+type HandlerConfig struct {
+	UserService *services.ServicesConfig
+}
+
+func (h *HandlerConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Name   string `json:"name"`
 		ApiKey string `json:"api_key"`
@@ -28,33 +31,25 @@ func (apiCfg *APIConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	user, err := apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdateAt:  time.Now().UTC(),
-		Name:      params.Name,
-	})
+	user, err := h.UserService.CreateUser(r.Context(), params.Name)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create user: %v", err))
 		return
 	}
 
+	utils.RespondWithJSON(w, http.StatusOK, user)
+}
+
+func (h *HandlerConfig) HandlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
-func (apiCfg *APIConfig) HandlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
-}
-
-func (apiCfg *APIConfig) HandlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
-	posts, err := apiCfg.DB.GetPostsForUser(r.Context(), database.GetPostsForUserParams{
-		UserID: user.ID,
-		Limit:  10,
-	})
+func (h *HandlerConfig) HandlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	posts, err := h.UserService.GetPostsForUser(r.Context(), user.ID, 10)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the posts %v ", err))
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIPostsForUser(posts))
+	utils.RespondWithJSON(w, http.StatusOK, posts)
 }

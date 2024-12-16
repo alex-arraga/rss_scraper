@@ -1,29 +1,29 @@
-//
 // Package chi is a small, idiomatic and composable router for building HTTP services.
 //
 // chi requires Go 1.10 or newer.
 //
 // Example:
-//  package main
 //
-//  import (
-//  	"net/http"
+//	package main
 //
-//  	"github.com/go-chi/chi"
-//  	"github.com/go-chi/chi/middleware"
-//  )
+//	import (
+//		"net/http"
 //
-//  func main() {
-//  	r := chi.NewRouter()
-//  	r.Use(middleware.Logger)
-//  	r.Use(middleware.Recoverer)
+//		"github.com/go-chi/chi"
+//		"github.com/go-chi/chi/middleware"
+//	)
 //
-//  	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-//  		w.Write([]byte("root."))
-//  	})
+//	func main() {
+//		r := chi.NewRouter()
+//		r.Use(middleware.Logger)
+//		r.Use(middleware.Recoverer)
 //
-//  	http.ListenAndServe(":3333", r)
-//  }
+//		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+//			w.Write([]byte("root."))
+//		})
+//
+//		http.ListenAndServe(":3333", r)
+//	}
 //
 // See github.com/go-chi/chi/_examples/ for more in-depth examples.
 //
@@ -47,12 +47,12 @@
 // placeholder which will match / characters.
 //
 // Examples:
-//  "/user/{name}" matches "/user/jsmith" but not "/user/jsmith/info" or "/user/jsmith/"
-//  "/user/{name}/info" matches "/user/jsmith/info"
-//  "/page/*" matches "/page/intro/latest"
-//  "/page/*/index" also matches "/page/intro/latest"
-//  "/date/{yyyy:\\d\\d\\d\\d}/{mm:\\d\\d}/{dd:\\d\\d}" matches "/date/2017/04/01"
 //
+//	"/user/{name}" matches "/user/jsmith" but not "/user/jsmith/info" or "/user/jsmith/"
+//	"/user/{name}/info" matches "/user/jsmith/info"
+//	"/page/*" matches "/page/intro/latest"
+//	"/page/*/index" also matches "/page/intro/latest"
+//	"/date/{yyyy:\\d\\d\\d\\d}/{mm:\\d\\d}/{dd:\\d\\d}" matches "/date/2017/04/01"
 package chi
 
 import "net/http"
@@ -112,6 +112,10 @@ type Router interface {
 	// MethodNotAllowed defines a handler to respond whenever a method is
 	// not allowed.
 	MethodNotAllowed(h http.HandlerFunc)
+}
+
+func (r Router) Get(s string, param any) {
+	panic("unimplemented")
 }
 
 // Routes interface adds two methods for router traversal, which is also

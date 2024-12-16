@@ -11,6 +11,7 @@ import (
 	"github.com/alex-arraga/rss_project/internal/database/connection"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/scrapper"
+	"github.com/alex-arraga/rss_project/internal/services"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	_ "github.com/lib/pq" // Import PostgresSQL driver
@@ -23,7 +24,13 @@ func main() {
 	conn := connection.ConnectDB(dbURL)
 
 	db := database.New(conn)
+
+	// ! Temp
 	apiCfg := api.APIConfig{
+		DB: db,
+	}
+
+	serviceConfig := services.ServicesConfig{
 		DB: db,
 	}
 
@@ -41,7 +48,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	routes.RegisterRoutes(router, &apiCfg)
+	routes.RegisterRoutes(router, &apiCfg, &serviceConfig)
 
 	srv := &http.Server{
 		Handler: router,

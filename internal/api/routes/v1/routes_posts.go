@@ -6,5 +6,5 @@ import (
 )
 
 func PostsRoutes(r chi.Router, apiCfg *api.APIConfig) {
-	r.Get("/posts", apiCfg.MiddlewareAuth(apiCfg.HandlerGetPostsForUser))
+	// r.Get("/posts", apiCfg.MiddlewareAuth(apiCfg.HandlerGetPostsForUser))
 }
