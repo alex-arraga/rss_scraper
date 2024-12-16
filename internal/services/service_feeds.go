@@ -41,44 +41,17 @@ func (srv *ServicesConfig) GetFeeds(ctx context.Context) ([]models.Feed, error) 
 }
 
 // PUT
-func (apiCfg *ServicesConfig) UpdateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
-	type parameters struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	}
-
-	// Get and validate feed id
-	feedID, err := utils.ParseURLParamToUUID(r, "feedID")
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	// Parse to JSON
-	params, err := utils.ParseRequestBody[parameters](r)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err))
-		return
-	}
-
-	// Validate params
-	if params.Name == "" || params.URL == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, "Name and URL are required")
-		return
-	}
-
-	// Update feed in db
-	feedUpdated, err := apiCfg.DB.UpdateFeed(r.Context(), database.UpdateFeedParams{
+func (srv *ServicesConfig) UpdateFeed(ctx context.Context, feedID uuid.UUID, name string, url string) (models.Feed, error) {
+	feedUpdated, err := srv.DB.UpdateFeed(ctx, database.UpdateFeedParams{
 		ID:   feedID,
-		Name: params.Name,
-		Url:  params.URL,
+		Name: name,
+		Url:  url,
 	})
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't update feed: %v", err))
-		return
+		return models.Feed{}, fmt.Errorf("Couldn't update feed: %v", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeed(feedUpdated))
+	return models.ResonseAPIFeed(feedUpdated), nil
 }
 
 // DELETE - one

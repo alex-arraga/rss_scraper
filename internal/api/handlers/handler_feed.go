@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
-	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
 )
 
@@ -50,7 +49,7 @@ func (h *HandlerConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) 
 }
 
 // PUT
-func (apiCfg *APIConfig) HandlerUpdateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (h *HandlerConfig) HandlerUpdateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
@@ -77,17 +76,13 @@ func (apiCfg *APIConfig) HandlerUpdateFeed(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Update feed in db
-	feedUpdated, err := apiCfg.DB.UpdateFeed(r.Context(), database.UpdateFeedParams{
-		ID:   feedID,
-		Name: params.Name,
-		Url:  params.URL,
-	})
+	feedUpdated, err := h.Services.UpdateFeed(r.Context(), feedID, params.Name, params.URL)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't update feed: %v", err))
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeed(feedUpdated))
+	utils.RespondWithJSON(w, http.StatusOK, feedUpdated)
 }
 
 // DELETE - one
