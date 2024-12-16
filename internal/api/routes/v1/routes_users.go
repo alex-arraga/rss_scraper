@@ -6,9 +6,9 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func UsersRoutes(r chi.Router, userService *services.ServicesConfig) {
+func UsersRoutes(r chi.Router, srv *services.ServicesConfig) {
 	handlerConfig := handlers.HandlerConfig{
-		Services: userService,
+		Services: srv,
 	}
 
 	r.Post("/users", handlerConfig.HandlerCreateUser)

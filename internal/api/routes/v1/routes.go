@@ -13,7 +13,7 @@ func RegisterV1Routes(r chi.Router, apiCfg *api.APIConfig, srv *services.Service
 	r.Mount("/v1", v1Router)
 
 	UsersRoutes(v1Router, srv)
-	FeedsRoutes(v1Router, apiCfg)
+	FeedsRoutes(v1Router, apiCfg, srv)
 	FeedFollowsRoutes(v1Router, apiCfg)
 	PostsRoutes(v1Router, apiCfg)
 }
