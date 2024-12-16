@@ -1,4 +1,4 @@
-package routes
+package v1
 
 import (
 	"github.com/alex-arraga/rss_project/internal/api"

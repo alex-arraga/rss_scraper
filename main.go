@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/alex-arraga/rss_project/internal/api"
+	"github.com/alex-arraga/rss_project/internal/api/routes"
 	"github.com/alex-arraga/rss_project/internal/config"
 	"github.com/alex-arraga/rss_project/internal/database/connection"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
@@ -40,24 +41,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	v1Router := chi.NewRouter()
-	router.Mount("/v1", v1Router)
-
-	v1Router.Get("/healthz", apiCfg.HandlerReadiness)
-	v1Router.Get("/err", apiCfg.HandlerErr)
-	v1Router.Post("/users", apiCfg.HandlerCreateUser) //createUser
-	v1Router.Get("/users", apiCfg.MiddlewareAuth(apiCfg.HandlerGetUserByAPIKey))
-
-	v1Router.Get("/feeds", apiCfg.HandlerGetFeeds)
-	v1Router.Post("/feeds", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateFeed))
-	v1Router.Put("/feeds/{feedID}", apiCfg.MiddlewareAuth(apiCfg.HandlerUpdateFeed))
-	v1Router.Delete("/feeds/{feedID}", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteFeed))
-
-	v1Router.Post("/feed_follows", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateFeedFollow))
-	v1Router.Get("/feed_follows", apiCfg.MiddlewareAuth(apiCfg.HandlerGetFeedsFollows))
-	v1Router.Delete("/feed_follows/{feedFollowID}", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteFeedFollows))
-
-	v1Router.Get("/posts", apiCfg.MiddlewareAuth(apiCfg.HandlerGetPostsForUser))
+	routes.RegisterRoutes(router, &apiCfg)
 
 	srv := &http.Server{
 		Handler: router,
