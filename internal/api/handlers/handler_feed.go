@@ -39,14 +39,14 @@ func (h *HandlerConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request
 }
 
 // GET - many
-func (apiCfg *APIConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
-	feeds, err := apiCfg.DB.GetFeeds(r.Context())
+func (h *HandlerConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := h.Services.GetFeeds(r.Context())
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeeds(feeds))
+	utils.RespondWithJSON(w, http.StatusOK, feeds)
 }
 
 // PUT

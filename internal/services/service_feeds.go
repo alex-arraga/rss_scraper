@@ -13,9 +13,9 @@ import (
 )
 
 // POST
-func (apiCfg *ServicesConfig) CreateFeed(ctx context.Context, userID uuid.UUID, name string, url string) (models.Feed, error) {
+func (srv *ServicesConfig) CreateFeed(ctx context.Context, userID uuid.UUID, name string, url string) (models.Feed, error) {
 	// Create feed in db
-	feed, err := apiCfg.DB.CreateFeed(ctx, database.CreateFeedParams{
+	feed, err := srv.DB.CreateFeed(ctx, database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
@@ -24,21 +24,20 @@ func (apiCfg *ServicesConfig) CreateFeed(ctx context.Context, userID uuid.UUID, 
 		UserID:    userID,
 	})
 	if err != nil {
-		return models.Feed{}, fmt.Errorf("Couldn't create feed: %v", err)
+		return models.Feed{}, fmt.Errorf("couldn't create feed: %v", err)
 	}
 
 	return models.ResonseAPIFeed(feed), nil
 }
 
 // GET - many
-func (apiCfg *ServicesConfig) GetFeeds(w http.ResponseWriter, r *http.Request) {
-	feeds, err := apiCfg.DB.GetFeeds(r.Context())
+func (srv *ServicesConfig) GetFeeds(ctx context.Context) ([]models.Feed, error) {
+	feeds, err := srv.DB.GetFeeds(ctx)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
-		return
+		return []models.Feed{}, fmt.Errorf("couldn't get feeds: %v", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeeds(feeds))
+	return models.ResonseAPIFeeds(feeds), nil
 }
 
 // PUT
