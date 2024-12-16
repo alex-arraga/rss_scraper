@@ -3,12 +3,10 @@ package services
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/models"
-	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -55,17 +53,11 @@ func (srv *ServicesConfig) UpdateFeed(ctx context.Context, feedID uuid.UUID, nam
 }
 
 // DELETE - one
-func (apiCfg *ServicesConfig) DeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedID, err := utils.ParseURLParamToUUID(r, "feedID")
+func (srv *ServicesConfig) DeleteFeed(ctx context.Context, feedID uuid.UUID) error {
+	err := srv.DB.DeleteFeed(ctx, feedID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return fmt.Errorf("couldn't delete feed: %v", err)
 	}
 
-	err = apiCfg.DB.DeleteFeed(r.Context(), feedID)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't delete feed: %v", err))
-		return
-	}
-
-	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
+	return nil
 }

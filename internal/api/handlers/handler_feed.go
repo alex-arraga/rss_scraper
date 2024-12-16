@@ -86,17 +86,17 @@ func (h *HandlerConfig) HandlerUpdateFeed(w http.ResponseWriter, r *http.Request
 }
 
 // DELETE - one
-func (apiCfg *APIConfig) HandlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (h *HandlerConfig) HandlerDeleteFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedID, err := utils.ParseURLParamToUUID(r, "feedID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
-	err = apiCfg.DB.DeleteFeed(r.Context(), feedID)
+	err = h.Services.DeleteFeed(r.Context(), feedID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't delete feed: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
+	utils.RespondWithJSON(w, http.StatusNoContent, struct{}{})
 }
