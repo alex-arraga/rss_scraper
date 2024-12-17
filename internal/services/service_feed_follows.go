@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,29 +12,19 @@ import (
 	"github.com/google/uuid"
 )
 
-func (apiCfg *ServicesConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
-	type parameters struct {
-		FeedID uuid.UUID `json:"feed_id"`
-	}
-	params, err := utils.ParseRequestBody[parameters](r)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error parsing JSON: %v", err))
-		return
-	}
-
-	feedFollows, err := apiCfg.DB.CreateFeedFollows(r.Context(), database.CreateFeedFollowsParams{
+func (srv *ServicesConfig) CreateFeedFollow(ctx context.Context, userID, feedID uuid.UUID) (models.FeedFollows, error) {
+	feedFollows, err := srv.DB.CreateFeedFollows(ctx, database.CreateFeedFollowsParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
-		FeedID:    params.FeedID,
-		UserID:    user.ID,
+		FeedID:    feedID,
+		UserID:    userID,
 	})
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
-		return
+		return models.FeedFollows{}, fmt.Errorf("couldn't create feed: %v", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusCreated, models.ResonseAPIFeedFollows(feedFollows))
+	return models.ResonseAPIFeedFollows(feedFollows), nil
 }
 
 func (apiCfg *ServicesConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {

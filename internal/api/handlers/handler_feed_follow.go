@@ -1,9 +1,8 @@
-package api
+package handlers
 
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/models"
@@ -11,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (apiCfg *APIConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (h *HandlerConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		FeedID uuid.UUID `json:"feed_id"`
 	}
@@ -21,19 +20,13 @@ func (apiCfg *APIConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.
 		return
 	}
 
-	feedFollows, err := apiCfg.DB.CreateFeedFollows(r.Context(), database.CreateFeedFollowsParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdateAt:  time.Now().UTC(),
-		FeedID:    params.FeedID,
-		UserID:    user.ID,
-	})
+	feedFollows, err := h.Services.CreateFeedFollow(r.Context(), user.ID, params.FeedID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusCreated, models.ResonseAPIFeedFollows(feedFollows))
+	utils.RespondWithJSON(w, http.StatusCreated, feedFollows)
 }
 
 func (apiCfg *APIConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {

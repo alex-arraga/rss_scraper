@@ -14,6 +14,6 @@ func RegisterV1Routes(r chi.Router, apiCfg *api.APIConfig, srv *services.Service
 
 	UsersRoutes(v1Router, srv)
 	FeedsRoutes(v1Router, apiCfg, srv)
-	FeedFollowsRoutes(v1Router, apiCfg)
+	FeedFollowsRoutes(v1Router, apiCfg, srv)
 	PostsRoutes(v1Router, apiCfg)
 }
