@@ -6,13 +6,8 @@ import (
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/models"
-	"github.com/alex-arraga/rss_project/internal/services"
 	"github.com/alex-arraga/rss_project/internal/utils"
 )
-
-type HandlerConfig struct {
-	Services *services.ServicesConfig
-}
 
 func (h *HandlerConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
