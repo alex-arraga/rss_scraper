@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
-	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
@@ -29,14 +28,14 @@ func (h *HandlerConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.R
 	utils.RespondWithJSON(w, http.StatusCreated, feedFollows)
 }
 
-func (apiCfg *APIConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedsFollows, err := apiCfg.DB.GetFeedsFollows(r.Context(), user.ID)
+func (h *HandlerConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+	feedsFollows, err := h.Services.GetFeedsFollows(r.Context(), user.ID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get feeds: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeedsFollows(feedsFollows))
+	utils.RespondWithJSON(w, http.StatusOK, feedsFollows)
 }
 
 func (apiCfg *APIConfig) HandlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {

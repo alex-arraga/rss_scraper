@@ -27,14 +27,13 @@ func (srv *ServicesConfig) CreateFeedFollow(ctx context.Context, userID, feedID 
 	return models.ResonseAPIFeedFollows(feedFollows), nil
 }
 
-func (apiCfg *ServicesConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedsFollows, err := apiCfg.DB.GetFeedsFollows(r.Context(), user.ID)
+func (srv *ServicesConfig) GetFeedsFollows(ctx context.Context, userID uuid.UUID) ([]models.FeedFollows, error) {
+	feedsFollows, err := srv.DB.GetFeedsFollows(ctx, userID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get feeds: %v", err))
-		return
+		return []models.FeedFollows{}, fmt.Errorf("couldn't get feeds: %v", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, models.ResonseAPIFeedsFollows(feedsFollows))
+	return models.ResonseAPIFeedsFollows(feedsFollows), nil
 }
 
 func (apiCfg *ServicesConfig) HandlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
