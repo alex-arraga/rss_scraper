@@ -38,18 +38,15 @@ func (h *HandlerConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Re
 	utils.RespondWithJSON(w, http.StatusOK, feedsFollows)
 }
 
-func (apiCfg *APIConfig) HandlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+func (h *HandlerConfig) HandlerDeleteFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedFollowId, err := utils.ParseURLParamToUUID(r, "feedFollowID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
-	err = apiCfg.DB.DeleteFeedFollows(r.Context(), database.DeleteFeedFollowsParams{
-		FeedID: feedFollowId,
-		UserID: user.ID,
-	})
+	err = h.Services.DeleteFeedFollows(r.Context(), user.ID, feedFollowId)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't delete feed: %v", err))
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
