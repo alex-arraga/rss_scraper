@@ -1,4 +1,4 @@
-package api
+package middlewares
 
 import (
 	"fmt"
@@ -9,9 +9,13 @@ import (
 	"github.com/alex-arraga/rss_project/internal/utils"
 )
 
-type authedHandler func(http.ResponseWriter, *http.Request, database.User)
+type MiddlewareConfig struct {
+	DB *database.Queries
+}
 
-func (apiCfg *APIConfig) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
+// type authedHandler func(http.ResponseWriter, *http.Request, database.User)
+
+func (m *MiddlewareConfig) MiddlewareAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey, err := auth.GetAPIKey(r.Header)
 		if err != nil {
@@ -19,12 +23,16 @@ func (apiCfg *APIConfig) MiddlewareAuth(handler authedHandler) http.HandlerFunc 
 			return
 		}
 
-		user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
+		user, err := m.DB.GetUserByAPIKey(r.Context(), apiKey)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get user: %v", err))
 			return
 		}
 
-		handler(w, r, user)
+		ctx := r.Context()
+		ctx = AddUserToContext(ctx, user)
+		r = r.WithContext(ctx)
+
+		next(w, r)
 	}
 }
