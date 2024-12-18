@@ -6,10 +6,10 @@ import (
 )
 
 func RegisterProtectedV1Routes(r chi.Router, h handlers.HandlerConfig) {
-	// ProtectedUserRoutes(r, srv)
+	// ProtectedUserRoutes(r, h)
 	ProtectedFeedFollowsRoutes(r, h)
-	// ProtectedFeedsRoutes(r, srv)
-	// ProtectedPostsRoutes(r, srv)
+	// ProtectedFeedsRoutes(r, h)
+	// ProtectedPostsRoutes(r, h)
 }
 
 func RegisterPublicV1Routes(r chi.Router, h handlers.HandlerConfig) {
