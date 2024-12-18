@@ -1,24 +1,40 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	v1 "github.com/alex-arraga/rss_project/internal/api/routes/v1"
 	"github.com/alex-arraga/rss_project/internal/services"
 	"github.com/go-chi/chi"
 )
 
-// ! I have to remove apiCfg later,
-// !  when all routes are updated
-func RegisterRoutes(r chi.Router, srv *services.ServicesConfig) {
+type RoutesParams struct {
+	router         chi.Router
+	srv            *services.ServicesConfig
+	authMiddleware func(next http.Handler) http.Handler
+}
+
+func RegisterRoutes(r chi.Router, srv *services.ServicesConfig, authMid func(next http.Handler) http.Handler) {
 	handlerConfig := handlers.HandlerConfig{
 		Services: srv,
 	}
 
-	// Testing routes
-	r.Get("/healthz", handlerConfig.HealthyHandler)
-	r.Get("/err", handlerConfig.UnhealthyHandler)
+	// Main subrouter for /v1
+	v1Router := chi.NewRouter()
+
+	// Subrouter with auth
+	protectedRouter := chi.NewRouter()
+	protectedRouter.Use(authMid)
 
 	// V1 Routes
-	v1.RegisterProtectedV1Routes(r, srv)
-	v1.RegisterPublicV1Routes(r, srv)
+	v1.RegisterProtectedV1Routes(protectedRouter, srv)
+	v1.RegisterPublicV1Routes(v1Router, srv)
+
+	v1Router.Mount("/", protectedRouter)
+	r.Mount("/v1", v1Router)
+
+	// General routes outside of /v1
+	r.Get("/healthz", handlerConfig.HealthyHandler)
+	r.Get("/err", handlerConfig.UnhealthyHandler)
 }

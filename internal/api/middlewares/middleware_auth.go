@@ -13,8 +13,8 @@ type MiddlewareConfig struct {
 }
 
 // MiddlewareAuth auth the user and set user data in the context
-func (m *MiddlewareConfig) MiddlewareAuth(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (m *MiddlewareConfig) MiddlewareAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Extract ApiKey from header
 		apiKey, err := auth.ExtractAPIKey(r.Header)
 		if err != nil {
@@ -32,5 +32,5 @@ func (m *MiddlewareConfig) MiddlewareAuth(next http.HandlerFunc) http.HandlerFun
 		// Add user in the context
 		ctx := auth.AddUserToContext(r.Context(), user)
 		next.ServeHTTP(w, r.WithContext(ctx))
-	}
+	})
 }

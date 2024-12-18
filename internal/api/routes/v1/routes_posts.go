@@ -1,10 +1,9 @@
 package v1
 
-import (
-	"github.com/alex-arraga/rss_project/internal/api"
-	"github.com/go-chi/chi"
-)
+// import (
+// 	"github.com/go-chi/chi"
+// )
 
-func ProtectedPostsRoutes(r chi.Router, apiCfg *api.APIConfig) {
-	// r.Get("/posts", apiCfg.MiddlewareAuth(apiCfg.HandlerGetPostsForUser))
-}
+// func ProtectedPostsRoutes(r chi.Router, apiCfg *api.APIConfig) {
+ 	// r.Get("/posts", apiCfg.MiddlewareAuth(apiCfg.HandlerGetPostsForUser))
+// }

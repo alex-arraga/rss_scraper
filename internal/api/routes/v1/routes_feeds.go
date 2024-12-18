@@ -15,11 +15,11 @@ func PublicFeedsRoutes(r chi.Router, srv *services.ServicesConfig) {
 }
 
 func ProtectedFeedsRoutes(r chi.Router, srv *services.ServicesConfig) {
-	handlerConfig := handlers.HandlerConfig{
-		Services: srv,
-	}
+// 	handlerConfig := handlers.HandlerConfig{
+// 		Services: srv,
+	// }
 
-	// r.Post("/feeds", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateFeed))
-	// r.Put("/feeds/{feedID}", apiCfg.MiddlewareAuth(apiCfg.HandlerUpdateFeed))
-	// r.Delete("/feeds/{feedID}", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteFeed))}
+// 	r.Post("/feeds", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateFeed))
+// 	r.Put("/feeds/{feedID}", apiCfg.MiddlewareAuth(apiCfg.HandlerUpdateFeed))
+// 	r.Delete("/feeds/{feedID}", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteFeed))}
 }

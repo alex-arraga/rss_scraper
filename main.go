@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alex-arraga/rss_project/internal/api"
+	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/alex-arraga/rss_project/internal/api/routes"
+	"github.com/alex-arraga/rss_project/internal/auth"
 	"github.com/alex-arraga/rss_project/internal/config"
 	"github.com/alex-arraga/rss_project/internal/database/connection"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
@@ -25,14 +26,8 @@ func main() {
 
 	db := database.New(conn)
 
-	// ! Temp
-	apiCfg := api.APIConfig{
-		DB: db,
-	}
-
-	serviceConfig := services.ServicesConfig{
-		DB: db,
-	}
+	authService := &auth.AuthService{DB: db}
+	middlewareConfig := &middlewares.MiddlewareConfig{AuthService: authService}
 
 	go scrapper.StartScrapping(db, 10, time.Minute)
 
@@ -48,7 +43,11 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	routes.RegisterRoutes(router, &serviceConfig)
+	routes.RegisterRoutes(
+		router,
+		&services.ServicesConfig{DB: db},
+		middlewareConfig.MiddlewareAuth,
+	)
 
 	srv := &http.Server{
 		Handler: router,

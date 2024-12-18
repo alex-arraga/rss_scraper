@@ -14,12 +14,12 @@ func PublicUsersRoutes(r chi.Router, srv *services.ServicesConfig) {
 	r.Post("/users", handlerConfig.HandlerCreateUser)
 }
 
-func ProtectedUserRoutes(r chi.Router, srv *services.ServicesConfig) {
-	handlerConfig := handlers.HandlerConfig{
-		Services: srv,
-	}
+// func ProtectedUserRoutes(r chi.Router, srv *services.ServicesConfig) {
+// 	handlerConfig := handlers.HandlerConfig{
+// 		Services: srv,
+// 	}
 
-	// ! Original -> r.Get("/users", handlerConfig.MiddlewareAuth(apiCfg.HandlerGetUserByAPIKey))
+// 	// ! Original -> r.Get("/users", handlerConfig.MiddlewareAuth(apiCfg.HandlerGetUserByAPIKey))
 
-	r.Get("/users", handlerConfig.HandlerGetUserByAPIKey())
-}
+// 	r.Get("/users", handlerConfig.HandlerGetUserByAPIKey())
+// }
