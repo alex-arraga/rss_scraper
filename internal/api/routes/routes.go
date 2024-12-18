@@ -9,12 +9,6 @@ import (
 	"github.com/go-chi/chi"
 )
 
-type RoutesParams struct {
-	router         chi.Router
-	srv            *services.ServicesConfig
-	authMiddleware func(next http.Handler) http.Handler
-}
-
 func RegisterRoutes(r chi.Router, srv *services.ServicesConfig, authMid func(next http.Handler) http.Handler) {
 	handlerConfig := handlers.HandlerConfig{
 		Services: srv,
@@ -28,8 +22,8 @@ func RegisterRoutes(r chi.Router, srv *services.ServicesConfig, authMid func(nex
 	protectedRouter.Use(authMid)
 
 	// V1 Routes
-	v1.RegisterProtectedV1Routes(protectedRouter, srv)
-	v1.RegisterPublicV1Routes(v1Router, srv)
+	v1.RegisterProtectedV1Routes(protectedRouter, handlerConfig)
+	v1.RegisterPublicV1Routes(v1Router, handlerConfig)
 
 	v1Router.Mount("/", protectedRouter)
 	r.Mount("/v1", v1Router)
