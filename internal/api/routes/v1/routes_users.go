@@ -6,11 +6,20 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func UsersRoutes(r chi.Router, srv *services.ServicesConfig) {
+func PublicUsersRoutes(r chi.Router, srv *services.ServicesConfig) {
 	handlerConfig := handlers.HandlerConfig{
 		Services: srv,
 	}
 
 	r.Post("/users", handlerConfig.HandlerCreateUser)
-	// r.Get("/users", handlerConfig.MiddlewareAuth(apiCfg.HandlerGetUserByAPIKey))
+}
+
+func ProtectedUserRoutes(r chi.Router, srv *services.ServicesConfig) {
+	handlerConfig := handlers.HandlerConfig{
+		Services: srv,
+	}
+
+	// ! Original -> r.Get("/users", handlerConfig.MiddlewareAuth(apiCfg.HandlerGetUserByAPIKey))
+
+	r.Get("/users", handlerConfig.HandlerGetUserByAPIKey())
 }

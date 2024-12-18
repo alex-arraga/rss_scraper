@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func FeedFollowsRoutes(r chi.Router, apiCfg *api.APIConfig, srv *services.ServicesConfig) {
+func ProtectedFeedFollowsRoutes(r chi.Router, apiCfg *api.APIConfig, srv *services.ServicesConfig) {
 	// r.Post("/feed_follows", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateFeedFollow))
 	// r.Get("/feed_follows", apiCfg.MiddlewareAuth(apiCfg.HandlerGetFeedsFollows))
 	// r.Delete("/feed_follows/{feedFollowID}", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteFeedFollows))

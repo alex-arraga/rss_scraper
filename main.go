@@ -48,7 +48,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	routes.RegisterRoutes(router, &apiCfg, &serviceConfig)
+	routes.RegisterRoutes(router, &serviceConfig)
 
 	srv := &http.Server{
 		Handler: router,

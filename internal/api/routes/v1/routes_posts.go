@@ -5,6 +5,6 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func PostsRoutes(r chi.Router, apiCfg *api.APIConfig) {
+func ProtectedPostsRoutes(r chi.Router, apiCfg *api.APIConfig) {
 	// r.Get("/posts", apiCfg.MiddlewareAuth(apiCfg.HandlerGetPostsForUser))
 }
