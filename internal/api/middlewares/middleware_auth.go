@@ -9,7 +9,7 @@ import (
 )
 
 type MiddlewareConfig struct {
-	AuthService *auth.AuthConfig
+	AuthService *auth.AuthService
 }
 
 // MiddlewareAuth auth the user and set user data in the context

@@ -9,7 +9,7 @@ import (
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 )
 
-type AuthConfig struct {
+type AuthService struct {
 	DB *database.Queries
 }
 
@@ -37,7 +37,7 @@ func ExtractAPIKey(headers http.Header) (string, error) {
 	return vals[1], nil
 }
 
-func (as *AuthConfig) AuthenticateUser(ctx context.Context, apiKey string) (database.User, error) {
+func (as *AuthService) AuthenticateUser(ctx context.Context, apiKey string) (database.User, error) {
 	user, err := as.DB.GetUserByAPIKey(ctx, apiKey)
 	if err != nil {
 		return database.User{}, errors.New("invalid API Key")
