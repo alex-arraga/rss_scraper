@@ -17,7 +17,7 @@ type MiddlewareConfig struct {
 
 func (m *MiddlewareConfig) MiddlewareAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		apiKey, err := auth.GetAPIKey(r.Header)
+		apiKey, err := auth.ExtractAPIKey(r.Header)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("Auth error: %v", err))
 			return
