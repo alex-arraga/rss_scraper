@@ -4,12 +4,13 @@ import (
 	"net/http"
 
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
+	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	v1 "github.com/alex-arraga/rss_project/internal/api/routes/v1"
 	"github.com/alex-arraga/rss_project/internal/services"
 	"github.com/go-chi/chi"
 )
 
-func RegisterRoutes(r chi.Router, srv *services.ServicesConfig, authMid func(next http.Handler) http.Handler) {
+func RegisterRoutes(r chi.Router, srv *services.ServicesConfig, authMid func(middlewares.AuthedHandler) http.HandlerFunc) {
 	handlerConfig := handlers.HandlerConfig{
 		Services: srv,
 	}
@@ -17,15 +18,11 @@ func RegisterRoutes(r chi.Router, srv *services.ServicesConfig, authMid func(nex
 	// Main subrouter for /v1
 	v1Router := chi.NewRouter()
 
-	// Subrouter with auth
-	protectedRouter := chi.NewRouter()
-	protectedRouter.Use(authMid)
-
 	// V1 Routes
-	v1.RegisterProtectedV1Routes(protectedRouter, handlerConfig)
+	v1.RegisterProtectedV1Routes(v1Router, handlerConfig, authMid)
 	v1.RegisterPublicV1Routes(v1Router, handlerConfig)
 
-	v1Router.Mount("/", protectedRouter)
+	v1Router.Mount("/", v1Router)
 	r.Mount("/v1", v1Router)
 
 	// General routes outside of /v1

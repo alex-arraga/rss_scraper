@@ -1,13 +1,16 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
+	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/go-chi/chi"
 )
 
-func RegisterProtectedV1Routes(r chi.Router, h handlers.HandlerConfig) {
-	// ProtectedUserRoutes(r, h)
-	ProtectedFeedFollowsRoutes(r, h)
+func RegisterProtectedV1Routes(r chi.Router, h handlers.HandlerConfig, authMid func(middlewares.AuthedHandler) http.HandlerFunc) {
+	ProtectedUserRoutes(r, h, authMid)
+	// ProtectedFeedFollowsRoutes(r, h)
 	// ProtectedFeedsRoutes(r, h)
 	// ProtectedPostsRoutes(r, h)
 }
