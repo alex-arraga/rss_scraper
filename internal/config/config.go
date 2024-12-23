@@ -1,27 +1,42 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // Import PostgresSQL driver
 )
 
-func LoadConfig() (string, string) {
-	// Export the variables of .env in the project
-	godotenv.Load(".env")
+// LoadConfig load enviroment variables and validates them.
+func LoadConfig() (string, string, error) {
+	// Define the .env file as a constant
+	const envFile string = ".env"
 
-	// Read env
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("PORT is not found in the enviroment")
+	// Load enviroment variables from the .env file
+	if err := godotenv.Load(envFile); err != nil {
+		return "", "", fmt.Errorf("failed to load %s file: %w", envFile, err)
 	}
 
-	dbURL := os.Getenv("DB_URL")
-	if dbURL == "" {
-		log.Fatal("DB_URL is not found in the enviroment")
+	// Retrieval and validation of required variables
+	port, err := getEnv("PORT")
+	if err == nil {
+		return "", "", fmt.Errorf("error reading PORT: %w", err)
 	}
 
-	return port, dbURL
+	dbURL, err := getEnv("DB_URL")
+	if err == nil {
+		return "", "", fmt.Errorf("error reading DB_URL: %w", err)
+	}
+
+	return port, dbURL, nil
+}
+
+// getEnv retrieves an environment variable or returns an error if it's missing.
+func getEnv(key string) (string, error) {
+	value := os.Getenv(key)
+	if value == "" {
+		return "", fmt.Errorf("%s is not found in the environment", key)
+	}
+	return value, nil
 }

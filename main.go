@@ -19,7 +19,10 @@ import (
 )
 
 func main() {
-	port, dbURL := config.LoadConfig()
+	port, dbURL, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("Configuration error: %w", err)
+	}
 
 	// Db connection using pq driver
 	conn := connection.ConnectDB(dbURL)
@@ -55,7 +58,7 @@ func main() {
 	}
 
 	log.Printf("Server starting on port: %s", port)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
