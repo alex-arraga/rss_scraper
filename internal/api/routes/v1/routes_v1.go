@@ -11,7 +11,7 @@ import (
 func RegisterProtectedV1Routes(r chi.Router, h handlers.HandlerConfig, authMid func(middlewares.AuthedHandler) http.HandlerFunc) {
 	ProtectedUserRoutes(r, h, authMid)
 	ProtectedFeedFollowsRoutes(r, h, authMid)
-	// ProtectedFeedsRoutes(r, h)
+	ProtectedFeedsRoutes(r, h, authMid)
 	// ProtectedPostsRoutes(r, h)
 }
 
