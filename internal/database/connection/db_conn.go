@@ -2,16 +2,23 @@ package connection
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 )
 
-func ConnectDB(dbURL string) *sql.DB {
-	// Db connection using pq driver
+// ConnectDB establishes a persistent connection to the PostgreSQL database using the given URL.
+// The returned *sql.DB can be reused for the application's lifetime.
+func ConnectDB(dbURL string) (*sql.DB, error) {
+	// Attempt to open a connection pool
 	conn, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Fatal("Database connection failed", err)
+		return nil, fmt.Errorf("failed to open database connection: %w", err)
 	}
-	// defer conn.Close()
 
-	return conn
+	// Validate the connection with Ping to ensure it's reachable
+	if err := conn.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	// Return the persistent connection pool
+	return conn, nil
 }

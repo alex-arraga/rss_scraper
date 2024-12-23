@@ -20,12 +20,12 @@ func LoadConfig() (string, string, error) {
 
 	// Retrieval and validation of required variables
 	port, err := getEnv("PORT")
-	if err == nil {
+	if err != nil {
 		return "", "", fmt.Errorf("error reading PORT: %w", err)
 	}
 
 	dbURL, err := getEnv("DB_URL")
-	if err == nil {
+	if err != nil {
 		return "", "", fmt.Errorf("error reading DB_URL: %w", err)
 	}
 

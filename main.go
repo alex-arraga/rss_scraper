@@ -21,11 +21,15 @@ import (
 func main() {
 	port, dbURL, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("Configuration error: %w", err)
+		log.Fatalf("Configuration error: %v", err)
 	}
 
 	// Db connection using pq driver
-	conn := connection.ConnectDB(dbURL)
+	conn, err := connection.ConnectDB(dbURL)
+	if err != nil {
+		log.Fatalf("Failed to connet to the database: %v", err)
+	}
+	defer conn.Close()
 
 	db := database.New(conn)
 
