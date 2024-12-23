@@ -44,15 +44,3 @@ func (as *AuthService) AuthenticateUser(ctx context.Context, apiKey string) (dat
 	}
 	return user, nil
 }
-
-func AddUserToContext(ctx context.Context, user database.User) context.Context {
-	return context.WithValue(ctx, UserContextKey, user)
-}
-
-func GetUserFromContext(ctx context.Context) (database.User, error) {
-	user, ok := ctx.Value(UserContextKey).(database.User)
-	if !ok {
-		return database.User{}, errors.New("no user found in context")
-	}
-	return user, nil
-}
