@@ -12,7 +12,7 @@ func RegisterProtectedV1Routes(r chi.Router, h handlers.HandlerConfig, authMid f
 	ProtectedUserRoutes(r, h, authMid)
 	ProtectedFeedFollowsRoutes(r, h, authMid)
 	ProtectedFeedsRoutes(r, h, authMid)
-	// ProtectedPostsRoutes(r, h)
+	ProtectedPostsRoutes(r, h, authMid)
 }
 
 func RegisterPublicV1Routes(r chi.Router, h handlers.HandlerConfig) {
