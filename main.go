@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -16,18 +15,24 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	_ "github.com/lib/pq" // Import PostgresSQL driver
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
+	// Logger setup
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Info().Msg("Starting application...")
+
 	port, dbURL, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Configuration error: %v", err)
+		log.Fatal().Err(err).Msg("Configuration error")
 	}
 
 	// Db connection using pq driver
 	conn, err := connection.ConnectDB(dbURL)
 	if err != nil {
-		log.Fatalf("Failed to connet to the database: %v", err)
+		log.Fatal().Err(err).Msg("Failed to connet to the database")
 	}
 	defer conn.Close()
 
@@ -36,7 +41,10 @@ func main() {
 	authService := &auth.AuthService{DB: db}
 	middlewareConfig := &middlewares.MiddlewareConfig{AuthService: authService}
 
-	go scrapper.StartScrapping(db, 10, time.Minute)
+	go func() {
+		log.Info().Msg("Starting scrapper")
+		scrapper.StartScrapping(db, 10, time.Minute)
+	}()
 
 	// Create router and server
 	router := chi.NewRouter()
@@ -57,16 +65,16 @@ func main() {
 	)
 
 	srv := &http.Server{
-		Handler: router,
-		Addr:    ":" + port,
+		Handler:      router,
+		Addr:         ":" + port,
 		WriteTimeout: 15 * time.Second,
-    ReadTimeout:  15 * time.Second,
-    IdleTimeout:  60 * time.Second,
+		ReadTimeout:  15 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
 
-	log.Printf("Server starting on port: %s", port)
+	log.Info().Msgf("Server starting on port: %s", port)
 	err = srv.ListenAndServe()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("Server failed")
 	}
 }
