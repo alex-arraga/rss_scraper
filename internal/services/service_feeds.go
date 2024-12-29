@@ -46,7 +46,7 @@ func (srv *ServicesConfig) UpdateFeed(ctx context.Context, feedID uuid.UUID, nam
 		Url:  url,
 	})
 	if err != nil {
-		return models.Feed{}, fmt.Errorf("Couldn't update feed: %v", err)
+		return models.Feed{}, fmt.Errorf("couldn't update feed: %v", err)
 	}
 
 	return models.ResonseAPIFeed(feedUpdated), nil
