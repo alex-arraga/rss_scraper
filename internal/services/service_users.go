@@ -12,12 +12,16 @@ import (
 	"github.com/google/uuid"
 )
 
-func (srv *ServicesConfig) CreateUser(ctx context.Context, name string) (models.User, error) {
+type UserService struct {
+	DB UserDatabase
+}
+
+func (us *UserService) CreateUser(ctx context.Context, name string) (models.User, error) {
 	if name == "" {
 		return models.User{}, fmt.Errorf("name is required")
 	}
 
-	user, err := srv.DB.CreateUser(ctx, database.CreateUserParams{
+	user, err := us.DB.CreateUser(ctx, database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
@@ -30,12 +34,12 @@ func (srv *ServicesConfig) CreateUser(ctx context.Context, name string) (models.
 	return models.ResponseAPIUser(user), nil
 }
 
-func (srv *ServicesConfig) GetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
+func (us *UserService) GetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
 }
 
-func (srv *ServicesConfig) GetPostsForUser(ctx context.Context, userID uuid.UUID, limit int32) ([]models.Post, error) {
-	posts, err := srv.DB.GetPostsForUser(ctx, database.GetPostsForUserParams{
+func (us *UserService) GetPostsForUser(ctx context.Context, userID uuid.UUID, limit int32) ([]models.Post, error) {
+	posts, err := us.DB.GetPostsForUser(ctx, database.GetPostsForUserParams{
 		UserID: userID,
 		Limit:  limit,
 	})
