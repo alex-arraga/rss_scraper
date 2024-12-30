@@ -7,7 +7,6 @@ import (
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/alex-arraga/rss_project/internal/api/routes"
-	"github.com/alex-arraga/rss_project/internal/auth"
 	"github.com/alex-arraga/rss_project/internal/config"
 	"github.com/alex-arraga/rss_project/internal/database/connection"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
@@ -39,8 +38,12 @@ func main() {
 
 	db := database.New(conn)
 
-	authService := &auth.AuthService{DB: db}
-	middlewareConfig := &middlewares.MiddlewareConfig{AuthService: authService}
+	// Container that inject dependencies (db -> services)
+	container := di.NewContainer(db)
+
+	middlewareConfig := &middlewares.MiddlewareConfig{
+		AuthService: container.AuthSerive,
+	}
 
 	go func() {
 		log.Info().Msg("Starting scrapper")
@@ -59,8 +62,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	c, _ := di.NewContainer(db)
-	handlerConfig := handlers.NewHandlerConfig(c)
+	handlerConfig := handlers.NewHandlerConfig(container)
 
 	routes.RegisterRoutes(
 		router,

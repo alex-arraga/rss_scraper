@@ -13,7 +13,8 @@ type Container struct {
 	FeedFollowService *services.FeedFollowService
 }
 
-func NewContainer(db *database.Queries) (*Container, error) {
+// Creates a new container for dependency injection
+func NewContainer(db *database.Queries) *Container {
 	authService := &auth.AuthService{DB: db}
 	userService := &services.UserService{DB: db}
 	feedService := &services.FeedService{DB: db}
@@ -24,5 +25,5 @@ func NewContainer(db *database.Queries) (*Container, error) {
 		UserService:       userService,
 		FeedService:       feedService,
 		FeedFollowService: feedFollowService,
-	}, nil
+	}
 }
