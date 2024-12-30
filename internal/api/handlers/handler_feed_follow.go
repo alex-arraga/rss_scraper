@@ -19,7 +19,7 @@ func (h *HandlerConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	feedFollows, err := h.Services.CreateFeedFollow(r.Context(), user.ID, params.FeedID)
+	feedFollows, err := h.Container.FeedFollowService.CreateFeedFollow(r.Context(), user.ID, params.FeedID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -29,7 +29,7 @@ func (h *HandlerConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.R
 }
 
 func (h *HandlerConfig) HandlerGetFeedsFollows(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedsFollows, err := h.Services.GetFeedsFollows(r.Context(), user.ID)
+	feedsFollows, err := h.Container.FeedFollowService.GetFeedsFollows(r.Context(), user.ID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -44,10 +44,10 @@ func (h *HandlerConfig) HandlerDeleteFeedFollows(w http.ResponseWriter, r *http.
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
-	err = h.Services.DeleteFeedFollows(r.Context(), user.ID, feedFollowId)
+	err = h.Container.FeedFollowService.DeleteFeedFollows(r.Context(), user.ID, feedFollowId)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
+	utils.RespondWithJSON(w, http.StatusNoContent, struct{}{})
 }
