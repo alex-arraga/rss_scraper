@@ -4,14 +4,15 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/alex-arraga/rss_project/internal/api/routes"
 	"github.com/alex-arraga/rss_project/internal/auth"
 	"github.com/alex-arraga/rss_project/internal/config"
 	"github.com/alex-arraga/rss_project/internal/database/connection"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	"github.com/alex-arraga/rss_project/internal/di"
 	"github.com/alex-arraga/rss_project/internal/scrapper"
-	"github.com/alex-arraga/rss_project/internal/services"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	_ "github.com/lib/pq" // Import PostgresSQL driver
@@ -58,9 +59,12 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	c, _ := di.NewContainer(db)
+	handlerConfig := handlers.NewHandlerConfig(c)
+
 	routes.RegisterRoutes(
 		router,
-		&services.ServicesConfig{DB: db},
+		*handlerConfig,
 		middlewareConfig.MiddlewareAuth,
 	)
 
