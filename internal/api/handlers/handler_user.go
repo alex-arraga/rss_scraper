@@ -26,7 +26,7 @@ func (h *HandlerConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	user, err := h.Services.CreateUser(r.Context(), params.Name)
+	user, err := h.Container.UserService.CreateUser(r.Context(), params.Name)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create user: %v", err))
 		return
@@ -40,7 +40,7 @@ func (h *HandlerConfig) HandlerGetUserByAPIKey(w http.ResponseWriter, r *http.Re
 }
 
 func (h *HandlerConfig) HandlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
-	posts, err := h.Services.GetPostsForUser(r.Context(), user.ID, 10)
+	posts, err := h.Container.UserService.GetPostsForUser(r.Context(), user.ID, 10)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the posts %v ", err))
 		return

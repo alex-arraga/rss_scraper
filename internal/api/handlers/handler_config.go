@@ -1,9 +1,15 @@
 package handlers
 
 import (
-	"github.com/alex-arraga/rss_project/internal/services"
+	"github.com/alex-arraga/rss_project/internal/di"
 )
 
 type HandlerConfig struct {
-	Services *services.ServicesConfig
+	Container *di.Container
+}
+
+func NewHandlerConfig(c *di.Container) *HandlerConfig {
+	return &HandlerConfig{
+		Container: c,
+	}
 }

@@ -12,6 +12,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type UserDatabase interface {
+	CreateUser(ctx context.Context, params database.CreateUserParams) (database.User, error)
+	GetUserByAPIKey(ctx context.Context, apiKey string) (database.User, error)
+	GetPostsForUser(ctx context.Context, params database.GetPostsForUserParams) ([]database.Post, error)
+}
+
 type UserService struct {
 	DB UserDatabase
 }
