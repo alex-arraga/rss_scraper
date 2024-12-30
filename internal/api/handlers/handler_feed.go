@@ -28,7 +28,7 @@ func (h *HandlerConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request
 	}
 
 	// Create feed in db
-	feed, err := h.Services.CreateFeed(r.Context(), user.ID, params.Name, params.URL)
+	feed, err := h.Container.FeedService.CreateFeed(r.Context(), user.ID, params.Name, params.URL)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't create feed: %v", err))
 		return
@@ -39,7 +39,7 @@ func (h *HandlerConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request
 
 // GET - many
 func (h *HandlerConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
-	feeds, err := h.Services.GetFeeds(r.Context())
+	feeds, err := h.Container.FeedService.GetFeeds(r.Context())
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feeds: %v", err))
 		return
@@ -76,7 +76,7 @@ func (h *HandlerConfig) HandlerUpdateFeed(w http.ResponseWriter, r *http.Request
 	}
 
 	// Update feed in db
-	feedUpdated, err := h.Services.UpdateFeed(r.Context(), feedID, params.Name, params.URL)
+	feedUpdated, err := h.Container.FeedService.UpdateFeed(r.Context(), feedID, params.Name, params.URL)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't update feed: %v", err))
 		return
@@ -92,7 +92,7 @@ func (h *HandlerConfig) HandlerDeleteFeed(w http.ResponseWriter, r *http.Request
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
-	err = h.Services.DeleteFeed(r.Context(), feedID)
+	err = h.Container.FeedService.DeleteFeed(r.Context(), feedID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
