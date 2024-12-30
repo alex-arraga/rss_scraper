@@ -6,13 +6,16 @@ import (
 )
 
 type Container struct {
-	UserService services.UserService
+	UserService *services.UserService
+	FeedService *services.FeedService
 }
 
 func NewContainer(db *database.Queries) (*Container, error) {
 	userService := &services.UserService{DB: db}
+	feedService := &services.FeedService{DB: db}
 
 	return &Container{
-		UserService: *userService,
+		UserService: userService,
+		FeedService: feedService,
 	}, nil
 }
