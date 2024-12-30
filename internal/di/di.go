@@ -6,8 +6,8 @@ import (
 )
 
 type Container struct {
-	UserService *services.UserService
-	FeedService *services.FeedService
+	UserService       *services.UserService
+	FeedService       *services.FeedService
 	FeedFollowService *services.FeedFollowService
 }
 
@@ -17,8 +17,8 @@ func NewContainer(db *database.Queries) (*Container, error) {
 	feedFollowService := &services.FeedFollowService{DB: db}
 
 	return &Container{
-		UserService: userService,
-		FeedService: feedService,
+		UserService:       userService,
+		FeedService:       feedService,
 		FeedFollowService: feedFollowService,
 	}, nil
 }
