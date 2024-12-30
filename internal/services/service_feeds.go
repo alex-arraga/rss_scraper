@@ -10,10 +10,21 @@ import (
 	"github.com/google/uuid"
 )
 
+type FeedDatabase interface {
+	CreateFeed(ctx context.Context, params database.CreateFeedParams) (database.Feed, error)
+	GetFeeds(ctx context.Context) ([]database.Feed, error)
+	UpdateFeed(ctx context.Context, params database.UpdateFeedParams) (database.Feed, error)
+	DeleteFeed(ctx context.Context, feedID uuid.UUID) error
+}
+
+type FeedService struct {
+	DB FeedDatabase
+}
+
 // POST
-func (srv *ServicesConfig) CreateFeed(ctx context.Context, userID uuid.UUID, name string, url string) (models.Feed, error) {
+func (fs *FeedService) CreateFeed(ctx context.Context, userID uuid.UUID, name string, url string) (models.Feed, error) {
 	// Create feed in db
-	feed, err := srv.DB.CreateFeed(ctx, database.CreateFeedParams{
+	feed, err := fs.DB.CreateFeed(ctx, database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
@@ -29,8 +40,8 @@ func (srv *ServicesConfig) CreateFeed(ctx context.Context, userID uuid.UUID, nam
 }
 
 // GET - many
-func (srv *ServicesConfig) GetFeeds(ctx context.Context) ([]models.Feed, error) {
-	feeds, err := srv.DB.GetFeeds(ctx)
+func (fs *FeedService) GetFeeds(ctx context.Context) ([]models.Feed, error) {
+	feeds, err := fs.DB.GetFeeds(ctx)
 	if err != nil {
 		return []models.Feed{}, fmt.Errorf("couldn't get feeds: %v", err)
 	}
@@ -39,8 +50,8 @@ func (srv *ServicesConfig) GetFeeds(ctx context.Context) ([]models.Feed, error) 
 }
 
 // PUT
-func (srv *ServicesConfig) UpdateFeed(ctx context.Context, feedID uuid.UUID, name string, url string) (models.Feed, error) {
-	feedUpdated, err := srv.DB.UpdateFeed(ctx, database.UpdateFeedParams{
+func (fs *FeedService) UpdateFeed(ctx context.Context, feedID uuid.UUID, name string, url string) (models.Feed, error) {
+	feedUpdated, err := fs.DB.UpdateFeed(ctx, database.UpdateFeedParams{
 		ID:   feedID,
 		Name: name,
 		Url:  url,
@@ -53,8 +64,8 @@ func (srv *ServicesConfig) UpdateFeed(ctx context.Context, feedID uuid.UUID, nam
 }
 
 // DELETE - one
-func (srv *ServicesConfig) DeleteFeed(ctx context.Context, feedID uuid.UUID) error {
-	err := srv.DB.DeleteFeed(ctx, feedID)
+func (fs *FeedService) DeleteFeed(ctx context.Context, feedID uuid.UUID) error {
+	err := fs.DB.DeleteFeed(ctx, feedID)
 	if err != nil {
 		return fmt.Errorf("couldn't delete feed: %v", err)
 	}
