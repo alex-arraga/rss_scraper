@@ -10,8 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
-func (srv *ServicesConfig) CreateFeedFollow(ctx context.Context, userID, feedID uuid.UUID) (models.FeedFollows, error) {
-	feedFollows, err := srv.DB.CreateFeedFollows(ctx, database.CreateFeedFollowsParams{
+type FeedFollowsDatabase interface {
+	CreateFeedFollows(ctx context.Context, params database.CreateFeedFollowsParams) (database.FeedFollow, error)
+	GetFeedsFollows(ctx context.Context, userID uuid.UUID) ([]database.FeedFollow, error)
+	DeleteFeedFollows(ctx context.Context, params database.DeleteFeedFollowsParams) error
+}
+
+type FeedFollowService struct {
+	DB FeedFollowsDatabase
+}
+
+func (fs *FeedFollowService) CreateFeedFollow(ctx context.Context, userID, feedID uuid.UUID) (models.FeedFollows, error) {
+	feedFollows, err := fs.DB.CreateFeedFollows(ctx, database.CreateFeedFollowsParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdateAt:  time.Now().UTC(),
@@ -25,8 +35,8 @@ func (srv *ServicesConfig) CreateFeedFollow(ctx context.Context, userID, feedID 
 	return models.ResonseAPIFeedFollows(feedFollows), nil
 }
 
-func (srv *ServicesConfig) GetFeedsFollows(ctx context.Context, userID uuid.UUID) ([]models.FeedFollows, error) {
-	feedsFollows, err := srv.DB.GetFeedsFollows(ctx, userID)
+func (fs *FeedFollowService) GetFeedsFollows(ctx context.Context, userID uuid.UUID) ([]models.FeedFollows, error) {
+	feedsFollows, err := fs.DB.GetFeedsFollows(ctx, userID)
 	if err != nil {
 		return []models.FeedFollows{}, fmt.Errorf("couldn't get feeds: %v", err)
 	}
@@ -34,8 +44,8 @@ func (srv *ServicesConfig) GetFeedsFollows(ctx context.Context, userID uuid.UUID
 	return models.ResonseAPIFeedsFollows(feedsFollows), nil
 }
 
-func (srv *ServicesConfig) DeleteFeedFollows(ctx context.Context, userID, feedID uuid.UUID) error {
-	err := srv.DB.DeleteFeedFollows(ctx, database.DeleteFeedFollowsParams{
+func (fs *FeedFollowService) DeleteFeedFollows(ctx context.Context, userID, feedID uuid.UUID) error {
+	err := fs.DB.DeleteFeedFollows(ctx, database.DeleteFeedFollowsParams{
 		FeedID: feedID,
 		UserID: userID,
 	})
