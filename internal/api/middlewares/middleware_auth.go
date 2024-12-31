@@ -36,3 +36,17 @@ func (m *MiddlewareConfig) MiddlewareAuth(handler AuthedHandler) http.HandlerFun
 		handler(w, r, user)
 	})
 }
+
+// AdaptAuthMiddleware converts the custom middleware (AuthedHandler)
+// into a standard middleware compatible with chi.Router.With().
+func AdaptAuthMiddleware(authMid func(AuthedHandler) http.HandlerFunc) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Wrapper for the next handler to inject user
+			authMid(func(w http.ResponseWriter, r *http.Request, user database.User) {
+				// Call the next handler in the chain
+				next.ServeHTTP(w, r)
+			})(w, r)
+		})
+	}
+}
