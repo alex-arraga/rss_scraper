@@ -7,6 +7,7 @@ import (
 	"github.com/alex-arraga/rss_project/internal/auth"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/utils"
+	"github.com/go-chi/chi"
 )
 
 type MiddlewareConfig struct {
@@ -37,16 +38,21 @@ func (m *MiddlewareConfig) MiddlewareAuth(handler AuthedHandler) http.HandlerFun
 	})
 }
 
-// AdaptAuthMiddleware converts the custom middleware (AuthedHandler)
-// into a standard middleware compatible with chi.Router.With().
-func AdaptAuthMiddleware(authMid func(AuthedHandler) http.HandlerFunc) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
+type ProtectedRouter struct {
+	chi.Router
+}
+
+// NewProtectedRouter creates a new router with the authentication middleware applied globally.
+func NewProtectedRouter(authMid func(AuthedHandler) http.HandlerFunc) *ProtectedRouter {
+	r := chi.NewRouter()
+
+	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Wrapper for the next handler to inject user
 			authMid(func(w http.ResponseWriter, r *http.Request, user database.User) {
-				// Call the next handler in the chain
 				next.ServeHTTP(w, r)
 			})(w, r)
 		})
-	}
+	})
+
+	return &ProtectedRouter{Router: r}
 }

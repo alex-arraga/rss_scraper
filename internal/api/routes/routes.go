@@ -12,8 +12,7 @@ import (
 func RegisterRoutes(r chi.Router, handlerConfig handlers.HandlerConfig, authMid func(middlewares.AuthedHandler) http.HandlerFunc) {
 	// Main subrouter for /v1
 	v1Router := chi.NewRouter()
-	adaptedMiddleware := middlewares.AdaptAuthMiddleware(authMid)
-	protectedRouter := v1Router.With(adaptedMiddleware)
+	protectedRouter := middlewares.NewProtectedRouter(authMid)
 
 	// V1 Routes
 	v1.RegisterProtectedV1Routes(protectedRouter, handlerConfig, authMid)
