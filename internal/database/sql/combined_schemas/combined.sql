@@ -100,8 +100,7 @@ CREATE TABLE public.users (
     created_at timestamp without time zone NOT NULL,
     update_at timestamp without time zone NOT NULL,
     name text NOT NULL,
-    api_key character varying(64) DEFAULT encode(sha256(((random())::text)::bytea), 'hex'::text) NOT NULL,
-    lastname text
+    api_key character varying(64) DEFAULT encode(sha256(((random())::text)::bytea), 'hex'::text) NOT NULL
 );
 
 

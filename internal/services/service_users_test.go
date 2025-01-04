@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"testing"
 	"time"
@@ -23,14 +22,12 @@ func TestCreateUser(t *testing.T) {
 	userService := &UserService{mockDB}
 
 	t.Run("successfully creates user", func(t *testing.T) {
-		name := "John"
-		lastname := "Doe"
+		name := "John Doe"
 		mockUser := database.User{
 			ID:        uuid.New(),
 			Name:      name,
 			CreatedAt: time.Now(),
 			UpdateAt:  time.Now(),
-			Lastname:  sql.NullString{String: lastname},
 		}
 
 		mockDB.EXPECT().CreateUser(gomock.Any(), gomock.Any()).Return(mockUser, nil)

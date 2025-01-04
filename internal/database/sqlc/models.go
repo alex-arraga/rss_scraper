@@ -53,5 +53,4 @@ type User struct {
 	UpdateAt  time.Time
 	Name      string
 	ApiKey    string
-	Lastname  sql.NullString
 }
