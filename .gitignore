@@ -1,2 +1,29 @@
+# Archivos de ambiente
+.env
+
+# Ejecutables
+*.exe
+rss_project.exe
+
+# Configuraciones del IDE
+.vscode/
+.idea/
+.codegpt/
+
+# Archivos binarios y de compilación
+bin/
+*.dll
+*.so
+*.dylib
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de debug
+debug/
+
+# Dependencias (opcional, ya que go.mod y go.sum deberían ser versionados)
+# vendor/
 .env
 rss_project.exe
