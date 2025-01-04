@@ -23,9 +23,11 @@ func TestCreateUser(t *testing.T) {
 
 	t.Run("successfully creates user", func(t *testing.T) {
 		name := "John Doe"
+		apiKey := uuid.New().String()
 		mockUser := database.User{
 			ID:        uuid.New(),
 			Name:      name,
+			ApiKey:    apiKey,
 			CreatedAt: time.Now(),
 			UpdateAt:  time.Now(),
 		}
@@ -50,6 +52,47 @@ func TestCreateUser(t *testing.T) {
 		mockDB.EXPECT().CreateUser(gomock.Any(), gomock.Any()).Return(database.User{}, errors.New("DB error"))
 
 		result, err := userService.CreateUser(context.Background(), "Jane Doe")
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+}
+
+func TestGetUserByAPIKey(t *testing.T) {
+	name := "John Doe"
+	apiKey := uuid.New().String()
+
+	// Create new mock controller
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create db mock and an instance of userService
+	mockDB := mocks_services.NewMockUserDatabase(ctrl)
+	userService := &UserService{mockDB}
+
+	t.Run("get user by api key successfully", func(t *testing.T) {
+		mockUser := database.User{
+			ID:        uuid.New(),
+			Name:      name,
+			ApiKey:    apiKey,
+			CreatedAt: time.Now(),
+			UpdateAt:  time.Now(),
+		}
+
+		// Expected behavior
+		mockDB.EXPECT().GetUserByAPIKey(gomock.Any(), gomock.Any()).Return(mockUser, nil)
+
+		// Really call
+		result, err := userService.GetUserByAPIKey(context.Background(), apiKey)
+
+		assert.NoError(t, err)
+		assert.Equal(t, mockUser.ID, result.ID)
+	})
+
+	t.Run("returns error if DB fails", func(t *testing.T) {
+		mockDB.EXPECT().GetUserByAPIKey(gomock.Any(), gomock.Any()).Return(database.User{}, errors.New("DB error"))
+
+		result, err := userService.GetUserByAPIKey(context.Background(), apiKey)
 
 		assert.Error(t, err)
 		assert.Empty(t, result)
