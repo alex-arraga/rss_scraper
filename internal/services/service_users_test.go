@@ -147,7 +147,7 @@ func TestGetPostsForUser(t *testing.T) {
 		assert.Equal(t, mockPosts[0].Title, result[0].Title)
 	})
 
-	t.Run("returns error if userID is invalid", func(t *testing.T) {
+	t.Run("returns error if userID it's invalid", func(t *testing.T) {
 		result, err := userService.GetPostsForUser(context.Background(), uuid.Nil, 10)
 
 		assert.Error(t, err)
@@ -165,8 +165,14 @@ func TestGetPostsForUser(t *testing.T) {
 		assert.Error(t, err)
 		assert.Empty(t, result)
 	})
-	t.Run("returns error if userID and limit is invalid", func(t *testing.T) {
+	t.Run("returns error if userID it's invalid and limit is 0", func(t *testing.T) {
 		result, err := userService.GetPostsForUser(context.Background(), uuid.Nil, 0)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+	t.Run("returns error if userID it's invalid and limit is a negative number", func(t *testing.T) {
+		result, err := userService.GetPostsForUser(context.Background(), uuid.Nil, -10)
 
 		assert.Error(t, err)
 		assert.Empty(t, result)
