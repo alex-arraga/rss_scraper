@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -48,6 +49,14 @@ func (us *UserService) GetUserByAPIKey(ctx context.Context, apiKey string) (mode
 }
 
 func (us *UserService) GetPostsForUser(ctx context.Context, userID uuid.UUID, limit int32) ([]models.Post, error) {
+	if userID == uuid.Nil {
+		return []models.Post{}, errors.New("invalid userID")
+	}
+
+	if limit <= 0 {
+		return []models.Post{}, errors.New("invalid limit")
+	}
+
 	posts, err := us.DB.GetPostsForUser(ctx, database.GetPostsForUserParams{
 		UserID: userID,
 		Limit:  limit,

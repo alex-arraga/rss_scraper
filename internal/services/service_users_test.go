@@ -101,6 +101,8 @@ func TestGetUserByAPIKey(t *testing.T) {
 }
 
 func TestGetPostsForUser(t *testing.T) {
+	userID := uuid.New()
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -108,8 +110,6 @@ func TestGetPostsForUser(t *testing.T) {
 	userService := &UserService{mockDB}
 
 	t.Run("get posts successfully", func(t *testing.T) {
-		userID := uuid.New()
-
 		mockPosts := []database.Post{
 			{
 				ID:          uuid.New(),
@@ -144,6 +144,31 @@ func TestGetPostsForUser(t *testing.T) {
 		assert.Equal(t, mockPosts[0].ID, result[0].ID)
 		assert.Equal(t, mockPosts[0].FeedID, result[0].FeedID)
 		assert.Equal(t, mockPosts[0].Url, result[0].URL)
-		assert.Equal(t, mockPosts, result)
+		assert.Equal(t, mockPosts[0].Title, result[0].Title)
+	})
+
+	t.Run("returns error if userID is invalid", func(t *testing.T) {
+		result, err := userService.GetPostsForUser(context.Background(), uuid.Nil, 10)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+	t.Run("returns error if limit is 0", func(t *testing.T) {
+		result, err := userService.GetPostsForUser(context.Background(), userID, 0)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+	t.Run("returns error if limit is a negative number", func(t *testing.T) {
+		result, err := userService.GetPostsForUser(context.Background(), userID, -10)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+	t.Run("returns error if userID and limit is invalid", func(t *testing.T) {
+		result, err := userService.GetPostsForUser(context.Background(), uuid.Nil, 0)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
 	})
 }
