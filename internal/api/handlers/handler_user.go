@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
-	"github.com/alex-arraga/rss_project/internal/models"
 	"github.com/alex-arraga/rss_project/internal/utils"
 )
 
@@ -36,7 +35,18 @@ func (h *HandlerConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request
 }
 
 func (h *HandlerConfig) HandlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
+	if user.ApiKey == "" {
+		utils.RespondWithError(w, http.StatusBadRequest, "ApiKey is required")
+		return
+	}
+
+	u, err := h.Container.UserService.GetUserByAPIKey(r.Context(), user.ApiKey)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get the user %v ", err))
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, u)
 }
 
 func (h *HandlerConfig) HandlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {

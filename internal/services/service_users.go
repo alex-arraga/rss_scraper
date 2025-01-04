@@ -3,12 +3,10 @@ package services
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/models"
-	"github.com/alex-arraga/rss_project/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -40,8 +38,13 @@ func (us *UserService) CreateUser(ctx context.Context, name string) (models.User
 	return models.ResponseAPIUser(user), nil
 }
 
-func (us *UserService) GetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	utils.RespondWithJSON(w, http.StatusOK, models.ResponseAPIUser(user))
+func (us *UserService) GetUserByAPIKey(ctx context.Context, apiKey string) (models.User, error) {
+	user, err := us.DB.GetUserByAPIKey(ctx, apiKey)
+	if err != nil {
+		return models.User{}, fmt.Errorf("user not found %v ", err)
+	}
+
+	return models.ResponseAPIUser(user), nil
 }
 
 func (us *UserService) GetPostsForUser(ctx context.Context, userID uuid.UUID, limit int32) ([]models.Post, error) {
