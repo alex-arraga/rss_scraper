@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"testing"
 	"time"
@@ -96,5 +97,53 @@ func TestGetUserByAPIKey(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Empty(t, result)
+	})
+}
+
+func TestGetPostsForUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockDB := mocks_services.NewMockUserDatabase(ctrl)
+	userService := &UserService{mockDB}
+
+	t.Run("get posts successfully", func(t *testing.T) {
+		userID := uuid.New()
+
+		mockPosts := []database.Post{
+			{
+				ID:          uuid.New(),
+				CreatedAt:   time.Now(),
+				UpdatedAt:   time.Now(),
+				Title:       "First title",
+				Description: sql.NullString{String: "First description", Valid: true},
+				PublishedAt: time.Now(),
+				Url:         "First URL",
+				FeedID:      uuid.New(),
+			},
+			{
+				ID:          uuid.New(),
+				CreatedAt:   time.Now(),
+				UpdatedAt:   time.Now(),
+				Title:       "Second title",
+				Description: sql.NullString{String: "Second description", Valid: true},
+				PublishedAt: time.Now(),
+				Url:         "Second URL",
+				FeedID:      uuid.New(),
+			},
+		}
+
+		// Behavior expected
+		mockDB.EXPECT().GetPostsForUser(gomock.Any(), gomock.Any()).Return(mockPosts, nil)
+
+		result, err := userService.GetPostsForUser(context.Background(), userID, 10)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, len(mockPosts), len(result))
+		assert.Equal(t, mockPosts[0].ID, result[0].ID)
+		assert.Equal(t, mockPosts[0].FeedID, result[0].FeedID)
+		assert.Equal(t, mockPosts[0].Url, result[0].URL)
+		assert.Equal(t, mockPosts, result)
 	})
 }
