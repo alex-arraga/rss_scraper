@@ -1,6 +1,3 @@
-# Archivos de ambiente
-.env
-
 # Ejecutables
 *.exe
 rss_project.exe
