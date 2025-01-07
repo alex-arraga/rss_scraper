@@ -24,3 +24,5 @@ debug/
 # vendor/
 .env
 rss_project.exe
+
+.codegpt
