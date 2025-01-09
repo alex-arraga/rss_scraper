@@ -57,25 +57,32 @@ func TestIntegration_CreateUser(t *testing.T) {
 	userService := &services.UserService{DB: testDB.db}
 
 	tests := []struct {
-		name     string
+		testName string
 		userName string
 		wantErr  bool
 	}{
 		{
-			name:     "successfully creates user",
+			testName: "successfully creates user",
 			userName: "John Doe",
 			wantErr:  false,
 		},
 		{
-			name:     "empty username",
+			testName: "empty username",
 			userName: "",
 			wantErr:  true,
 		},
-		// Puedes agregar más casos de prueba aquí
+		{
+			testName: "empty apikey",
+			wantErr:  true,
+		},
+		{
+			testName: "empty userID",
+			wantErr:  true,
+		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.testName, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 
@@ -102,6 +109,7 @@ func TestIntegration_CreateUser(t *testing.T) {
 			dbUser, err := userService.GetUserByAPIKey(ctx, user.APIKey)
 			assert.NoError(t, err)
 			assert.Equal(t, user.ID, dbUser.ID)
+			assert.Equal(t, user.APIKey, dbUser.APIKey)
 			assert.Equal(t, user.Name, dbUser.Name)
 
 			// Commit de la transacción si todo está bien
