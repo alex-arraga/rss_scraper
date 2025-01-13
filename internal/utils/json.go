@@ -33,7 +33,10 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	}
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(data)
+	_, err = w.Write(data)
+	if err != nil {
+		log.Printf("Error writing data: %v", err)
+	}
 }
 
 func ParseRequestBody[T any](r *http.Request) (T, error) {

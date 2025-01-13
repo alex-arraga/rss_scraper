@@ -90,7 +90,12 @@ func TestIntegration_CreateUser(t *testing.T) {
 			// Comenzar una transacción
 			tx, err := testDB.conn.BeginTx(ctx, nil)
 			require.NoError(t, err)
-			defer tx.Rollback() // Asegurar rollback en caso de error
+			// Asegurar rollback en caso de error
+			defer func() {
+				if rErr := tx.Rollback(); rErr != nil && rErr != sql.ErrTxDone {
+					t.Errorf("Error during rollback: %v", rErr)
+				}
+			}()
 
 			// Ejecutar la prueba
 			user, err := userService.CreateUser(ctx, tt.userName)

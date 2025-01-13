@@ -11,7 +11,11 @@ import (
 func main() {
 	outputFile := "./internal/database/sql/combined_schemas/combined.sql"
 
-	godotenv.Load(".env")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env: %w", err)
+	}
+
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB_URL is not found in the enviroment")
