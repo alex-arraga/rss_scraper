@@ -3,10 +3,11 @@ package routes
 import (
 	"net/http"
 
+	"github.com/go-chi/chi"
+
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	v1 "github.com/alex-arraga/rss_project/internal/api/routes/v1"
-	"github.com/go-chi/chi"
 )
 
 func RegisterRoutes(r chi.Router, handlerConfig handlers.HandlerConfig, authMid func(middlewares.AuthedHandler) http.HandlerFunc) {

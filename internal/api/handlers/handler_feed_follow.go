@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/utils"
-	"github.com/google/uuid"
 )
 
 func (h *HandlerConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {

@@ -8,8 +8,9 @@ import (
 	"sync"
 	"time"
 
-	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/google/uuid"
+
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 )
 
 func StartScrapping(

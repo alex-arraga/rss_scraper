@@ -3,8 +3,9 @@ package models
 import (
 	"time"
 
-	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/google/uuid"
+
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 )
 
 type Feed struct {

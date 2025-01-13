@@ -7,11 +7,12 @@ import (
 	"testing"
 	"time"
 
-	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
-	mocks_services "github.com/alex-arraga/rss_project/internal/tests/mocks/services"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
+	mocks_services "github.com/alex-arraga/rss_project/internal/tests/mocks/services"
 )
 
 func TestCreateUser(t *testing.T) {

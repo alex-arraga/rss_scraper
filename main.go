@@ -4,6 +4,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
+	_ "github.com/lib/pq" // Import PostgresSQL driver
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/alex-arraga/rss_project/internal/api/routes"
@@ -12,11 +18,6 @@ import (
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/di"
 	"github.com/alex-arraga/rss_project/internal/scrapper"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/cors"
-	_ "github.com/lib/pq" // Import PostgresSQL driver
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 func main() {
