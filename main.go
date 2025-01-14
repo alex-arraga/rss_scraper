@@ -10,6 +10,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/alex-arraga/rss_project/internal/api/routes"
@@ -51,6 +53,14 @@ func main() {
 		scrapper.StartScrapping(db, 10, time.Minute)
 	}()
 
+	go func() {
+		log.Info().Msg("Prometheus metrics server starting on port 2112")
+		err = http.ListenAndServe(":2112", promhttp.Handler())
+		if err != nil {
+			log.Fatal().Msg("Prometheus server failed")
+		}
+	}()
+
 	// Create router and server
 	router := chi.NewRouter()
 
@@ -79,9 +89,9 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	log.Info().Msgf("Server starting on port: %s", port)
+	log.Info().Msgf("Application server starting on port: %s", port)
 	err = srv.ListenAndServe()
 	if err != nil {
-		log.Fatal().Err(err).Msg("Server failed")
+		log.Fatal().Err(err).Msg("Application server failed")
 	}
 }
