@@ -10,8 +10,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/alex-arraga/rss_project/internal/api/handlers"
 	"github.com/alex-arraga/rss_project/internal/api/middlewares"
 	"github.com/alex-arraga/rss_project/internal/api/routes"
@@ -19,6 +17,7 @@ import (
 	"github.com/alex-arraga/rss_project/internal/database/connection"
 	database "github.com/alex-arraga/rss_project/internal/database/sqlc"
 	"github.com/alex-arraga/rss_project/internal/di"
+	"github.com/alex-arraga/rss_project/internal/logger"
 	"github.com/alex-arraga/rss_project/internal/scrapper"
 )
 
@@ -54,10 +53,9 @@ func main() {
 	}()
 
 	go func() {
-		log.Info().Msg("Prometheus metrics server starting on port 2112")
-		err = http.ListenAndServe(":2112", promhttp.Handler())
+		err = logger.StartPrometheus()
 		if err != nil {
-			log.Fatal().Msg("Prometheus server failed")
+			log.Fatal().Msgf("Prometheus error: %v", err)
 		}
 	}()
 
