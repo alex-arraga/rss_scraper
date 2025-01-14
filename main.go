@@ -53,6 +53,10 @@ func main() {
 	}()
 
 	go func() {
+		start := time.Now()
+		logger.RecordHTTPRequest("GET", "/v1/users", time.Since(start))
+
+		// Initialize prometheus server
 		err = logger.StartPrometheus()
 		if err != nil {
 			log.Fatal().Msgf("Prometheus error: %v", err)
