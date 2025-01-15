@@ -70,10 +70,10 @@ func RecordError(errorType string) {
 // Inicia el servidor de métricas de Prometheus
 func StartPrometheus() error {
 	// Escuchar servidor en /metrics
-	log.Info().Msg("Prometheus metrics server starting on port 2112")
+	log.Info().Msg("Prometheus metrics server starting on port 8080")
 
 	http.Handle("/metrics", promhttp.Handler())
-	err := http.ListenAndServe(":2112", nil)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		return errors.New("prometheus server failed")
 	}
