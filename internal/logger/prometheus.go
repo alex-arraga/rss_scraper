@@ -11,16 +11,18 @@ import (
 )
 
 var (
+	myapp = "RSS_Project"
+
 	// Métrica para contar operaciones procesadas
 	opsProcessed = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "myapp_processed_ops_total",
+		Name: myapp + "_ops_total",
 		Help: "The total number of processed events",
 	})
 
 	// Métrica para la cantidad de solicitudes HTTP
 	httpRequestsTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "myapp_http_requests_total",
+			Name: myapp + "_http_requests_total",
 			Help: "Total number of HTTP requests",
 		},
 		[]string{"method", "endpoint"},
@@ -29,7 +31,7 @@ var (
 	// Métrica para medir la duración de las solicitudes HTTP
 	httpRequestDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "myapp_http_request_duration_seconds",
+			Name:    myapp + "_http_request_duration_seconds",
 			Help:    "Duration of HTTP requests in seconds",
 			Buckets: prometheus.DefBuckets,
 		},
@@ -39,7 +41,7 @@ var (
 	// Métrica para registrar errores
 	errorCount = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "myapp_error_count_total",
+			Name: myapp + "_error_count_total",
 			Help: "Total number of errors logged",
 		},
 		[]string{"type"},
@@ -54,18 +56,8 @@ func init() {
 	prometheus.MustRegister(errorCount)
 }
 
-// Recorda métricas procesadas cada 2 segundos como ejemplo
-func recordMetrics() {
-	go func() {
-		for {
-			opsProcessed.Inc()
-			time.Sleep(2 * time.Second)
-		}
-	}()
-}
-
 // Incrementa las métricas de solicitudes HTTP
-func RecordHTTPRequest(method, endpoint string, duration time.Duration) {
+func RecordHTTPRequests(method, endpoint string, duration time.Duration) {
 	httpRequestsTotal.WithLabelValues(method, endpoint).Inc()
 	httpRequestDuration.WithLabelValues(method, endpoint).Observe(duration.Seconds())
 }
@@ -77,9 +69,6 @@ func RecordError(errorType string) {
 
 // Inicia el servidor de métricas de Prometheus
 func StartPrometheus() error {
-	log.Info().Msg("Prometheus recording metrics...")
-	recordMetrics()
-
 	// Escuchar servidor en /metrics
 	log.Info().Msg("Prometheus metrics server starting on port 2112")
 

@@ -54,7 +54,7 @@ func main() {
 
 	go func() {
 		start := time.Now()
-		logger.RecordHTTPRequest("GET", "/v1/users", time.Since(start))
+		logger.RecordHTTPRequests(time.Since(start))
 
 		// Initialize prometheus server
 		err = logger.StartPrometheus()
