@@ -53,9 +53,6 @@ func main() {
 	}()
 
 	go func() {
-		start := time.Now()
-		logger.RecordHTTPRequests(time.Since(start))
-
 		// Initialize prometheus server
 		err = logger.StartPrometheus()
 		if err != nil {
@@ -65,6 +62,7 @@ func main() {
 
 	// Create router and server
 	router := chi.NewRouter()
+	router.Use(middlewares.MetricsMiddleware)
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
