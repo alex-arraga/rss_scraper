@@ -55,7 +55,7 @@ func main() {
 	go func() {
 		// Initialize prometheus server
 		err = logger.StartPrometheus()
-		if err != nil {
+		if err != nil {	
 			log.Fatal().Msgf("Prometheus error: %v", err)
 		}
 	}()
